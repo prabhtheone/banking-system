@@ -4,24 +4,27 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Language: C](https://img.shields.io/badge/Language-C-A8B9CC.svg?logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
 
-A **console-based banking system written in C** that demonstrates core banking operations, file-based persistence, authentication, transfers, and transaction history — without an external database.
+A **console-based banking system written in C** that demonstrates account management, authentication, file-based persistence, transfers, and transaction history — without an external database.
 
-> 🎓 **Learning project:** built to practice C programming, structs, file I/O, functions, input handling, and basic application architecture.
+> 🎓 **Learning project:** built to practice C programming, structs, file I/O, functions, input validation, error handling, and basic application architecture.
+
+> ⚠️ **Important:** this is an educational simulation, not production banking software. Do not use real credentials, personal financial data, or real money.
 
 ## ✨ Features
 
 - 👤 Create bank accounts
-- 🔐 PIN-protected login
+- 🔐 PIN-protected login with 4-digit validation
 - 💰 Deposit and withdraw money
 - 🔄 Transfer money between accounts
 - 📊 Check account balance
 - 🧾 View timestamped transaction history
-- 📋 List active accounts
-- 🗑️ Soft-delete accounts
+- 📋 List active demo accounts
+- 🗑️ Delete accounts only after the balance reaches zero
 - 💾 Persistent storage using binary files
-- 🧰 Simple `Makefile` build workflow
-- 🤖 GitHub Actions CI for automated builds
-- 🖥️ Runs on Linux, macOS, and Windows with GCC/MinGW/WSL
+- 🛡️ Defensive input validation and file-write checks
+- 🧰 Simple `Makefile` build and test workflow
+- 🤖 GitHub Actions CI for automated build and smoke testing
+- 🖥️ Runs on Linux, macOS, and Windows with a compatible C11 toolchain
 
 ## 🚀 Quick Start
 
@@ -39,7 +42,7 @@ make
 Or compile directly:
 
 ```bash
-gcc -Wall -Wextra -std=c11 -O2 -o banking_system banking_system.c
+gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o banking_system banking_system.c
 ```
 
 ### Run
@@ -56,13 +59,25 @@ Windows (MinGW):
 banking_system.exe
 ```
 
-## 🧪 Example
+## 🧪 Test
+
+Run the automated smoke test locally:
+
+```bash
+make test
+```
+
+The test creates a temporary demo account, verifies successful startup/account creation/exit, checks that runtime data is written, and cleans the generated files afterward.
+
+Every push and pull request also runs the build, smoke test, and strict compiler check through GitHub Actions.
+
+## 🖥️ Example
 
 ```text
 ================ BANKING SYSTEM ================
 1. Create Account
 2. Login
-3. List All Accounts
+3. List All Accounts (demo)
 4. Exit
 ==================================================
 Choose an option: 1
@@ -76,7 +91,7 @@ Account created successfully!
 Your account number is: 1001
 ```
 
-After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete the account.
+After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
 
 ## 🧠 What This Project Demonstrates
 
@@ -88,9 +103,9 @@ This project is useful for students learning C because it combines several conce
 - Account lookup and record updates
 - Transaction logging
 - Basic authentication
-- Input-buffer handling
+- Robust line-based input parsing
 - Persistent local application state
-- Make-based compilation
+- Make-based compilation and testing
 - Continuous integration with GitHub Actions
 
 ## 📁 Project Structure
@@ -98,20 +113,23 @@ This project is useful for students learning C because it combines several conce
 ```text
 .
 ├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   └── feature_request.md
 │   └── workflows/
-│       └── ci.yml             # Automated build checks
-├── banking_system.c            # Main C application
-├── Makefile                    # Build commands
-├── LICENSE                     # MIT License
-├── CONTRIBUTING.md             # Contribution guide
-├── SECURITY.md                 # Security notes
-├── README.md                   # Project documentation
-├── .gitignore                  # Runtime/build exclusions
-├── accounts.dat                # Generated locally at runtime
-└── transactions.dat            # Generated locally at runtime
+│       └── ci.yml
+├── tests/
+│   └── smoke_test.sh
+├── banking_system.c
+├── Makefile
+├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── README.md
+└── .gitignore
 ```
 
-`accounts.dat` and `transactions.dat` are runtime-generated files and are intentionally excluded from Git.
+`accounts.dat` and `transactions.dat` are generated locally at runtime and are intentionally excluded from Git.
 
 ## ⚠️ Security & Limitations
 
@@ -122,37 +140,35 @@ The current implementation intentionally keeps the design simple. In particular:
 - PINs are stored as plaintext in the local binary account file.
 - Account and transaction files are not encrypted at rest.
 - There is no login lockout or rate limiting.
-- PIN validation is intentionally basic.
-- File operations are designed for a single local user, not concurrent access.
+- The demo account directory displays account data and should not be treated as a real bank interface.
+- File operations are designed for a simple local application, not concurrent users.
 - There is no real bank/payment integration.
 
-**Never use real banking credentials, personal information, or real money with this project.**
+See [SECURITY.md](SECURITY.md) for the project's security notes and responsible-reporting guidance.
 
 ## 🗺️ Roadmap
 
-Potential improvements for future versions:
+Potential next improvements:
 
-- [ ] Hash PINs instead of storing them directly
-- [ ] Add stronger input validation
-- [ ] Add automated unit/integration tests
-- [ ] Improve transaction atomicity and error handling
+- [ ] Hash PINs with a vetted password-hashing library
+- [ ] Replace floating-point money with integer cents
+- [ ] Add comprehensive automated unit/integration tests
+- [ ] Make transfers fully atomic with stronger storage guarantees
 - [ ] Add account statements/export
-- [ ] Add better terminal UI and colors
-- [ ] Add password/PIN retry limits
-- [ ] Improve cross-platform support
-- [ ] Add a small database-backed version for comparison
+- [ ] Add richer terminal UI and colors
+- [ ] Add login retry limits and lockout
+- [ ] Improve cross-platform tooling
+- [ ] Add a database-backed version for comparison
 
 ## 🤝 Contributing
 
 Contributions are welcome — especially improvements that make the project safer, easier to understand, or more useful for C learners.
 
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines.
-
-If you build on this project, feel free to open an issue or pull request and share what you improved.
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines. Bug reports and feature ideas can also use the repository's issue templates.
 
 ## ⭐ Support the Project
 
-If this project helped you learn C, file handling, or basic application design, consider **starring the repository**. It helps other learners discover the project.
+If this project helped you learn C, file handling, or application design, consider **starring the repository**. A genuine star helps other learners discover the project.
 
 Issues, pull requests, documentation improvements, and constructive feedback are also welcome.
 
@@ -170,4 +186,4 @@ GitHub: [@prabhtheone](https://github.com/prabhtheone)
 
 ### Keywords
 
-`c` `c-language` `banking-system` `banking` `finance` `console-application` `file-handling` `file-io` `binary-files` `authentication` `transaction-history` `makefile` `github-actions` `beginner-project` `student-project` `learning-c` `systems-programming`
+`c` `c-programming` `c11` `banking-system` `banking` `finance` `console-application` `file-handling` `file-io` `binary-files` `authentication` `transaction-history` `makefile` `github-actions` `smoke-test` `beginner-project` `student-project` `learning-c` `systems-programming`
