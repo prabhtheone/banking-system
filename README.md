@@ -1,24 +1,34 @@
-# Simple Banking System (C)
+# 🏦 Banking System in C
 
-A console-based banking system written in C. Supports creating accounts, deposits, withdrawals, transfers between accounts, transaction history, and persistent storage using binary files — no external database required.
+[![C CI](https://github.com/prabhtheone/banking-system/actions/workflows/ci.yml/badge.svg)](https://github.com/prabhtheone/banking-system/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Language: C](https://img.shields.io/badge/Language-C-A8B9CC.svg?logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
 
-## Features
+A **console-based banking system written in C** that demonstrates core banking operations, file-based persistence, authentication, transfers, and transaction history — without an external database.
 
-- Create a new account with a name, 4-digit PIN, and optional opening deposit
-- PIN-protected login
-- Deposit and withdraw funds
-- Transfer money between two accounts
-- View per-account transaction history (timestamped)
-- List all active accounts
-- Soft-delete an account
-- Data persists across runs via binary files (`accounts.dat`, `transactions.dat`)
+> 🎓 **Learning project:** built to practice C programming, structs, file I/O, functions, input handling, and basic application architecture.
 
-## Getting Started
+## ✨ Features
+
+- 👤 Create bank accounts
+- 🔐 PIN-protected login
+- 💰 Deposit and withdraw money
+- 🔄 Transfer money between accounts
+- 📊 Check account balance
+- 🧾 View timestamped transaction history
+- 📋 List active accounts
+- 🗑️ Soft-delete accounts
+- 💾 Persistent storage using binary files
+- 🧰 Simple `Makefile` build workflow
+- 🤖 GitHub Actions CI for automated builds
+- 🖥️ Runs on Linux, macOS, and Windows with GCC/MinGW/WSL
+
+## 🚀 Quick Start
 
 ### Requirements
 
-- GCC (or any C compiler with C11 support)
-- Works on Linux, macOS, and Windows (via MinGW/WSL)
+- GCC or another C11-compatible compiler
+- Make (recommended)
 
 ### Build
 
@@ -26,59 +36,138 @@ A console-based banking system written in C. Supports creating accounts, deposit
 make
 ```
 
-or manually:
+Or compile directly:
 
 ```bash
-gcc banking_system.c -o banking_system
+gcc -Wall -Wextra -std=c11 -O2 -o banking_system banking_system.c
 ```
 
 ### Run
+
+Linux/macOS/WSL:
 
 ```bash
 ./banking_system
 ```
 
-## Usage
+Windows (MinGW):
 
-On launch you'll see the main menu:
-
+```bash
+banking_system.exe
 ```
+
+## 🧪 Example
+
+```text
 ================ BANKING SYSTEM ================
 1. Create Account
 2. Login
 3. List All Accounts
 4. Exit
 ==================================================
+Choose an option: 1
+
+=== Create New Account ===
+Enter full name: Alex Kumar
+Set a 4-digit PIN: 1234
+Enter initial deposit amount: 5000
+
+Account created successfully!
+Your account number is: 1001
 ```
 
-Create an account to get an account number, then log in with that number and your PIN to deposit, withdraw, transfer, or view your transaction history.
+After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete the account.
 
-## Project Structure
+## 🧠 What This Project Demonstrates
 
-```
+This project is useful for students learning C because it combines several concepts in one application:
+
+- `struct`-based data modeling
+- Functions and modular program flow
+- Binary file read/write operations
+- Account lookup and record updates
+- Transaction logging
+- Basic authentication
+- Input-buffer handling
+- Persistent local application state
+- Make-based compilation
+- Continuous integration with GitHub Actions
+
+## 📁 Project Structure
+
+```text
 .
-├── banking_system.c     # Main source file
-├── Makefile              # Build helper
-├── accounts.dat          # Generated at runtime — account records
-└── transactions.dat      # Generated at runtime — transaction log
+├── .github/
+│   └── workflows/
+│       └── ci.yml             # Automated build checks
+├── banking_system.c            # Main C application
+├── Makefile                    # Build commands
+├── LICENSE                     # MIT License
+├── CONTRIBUTING.md             # Contribution guide
+├── SECURITY.md                 # Security notes
+├── README.md                   # Project documentation
+├── .gitignore                  # Runtime/build exclusions
+├── accounts.dat                # Generated locally at runtime
+└── transactions.dat            # Generated locally at runtime
 ```
 
-## Known Limitations
+`accounts.dat` and `transactions.dat` are runtime-generated files and are intentionally excluded from Git.
 
-This was built as a learning project, so a few things are simplified on purpose and worth knowing before treating it as production code:
+## ⚠️ Security & Limitations
 
-- **PINs are stored in plain text** inside `accounts.dat`, not hashed. Anyone with access to that file can read every PIN.
-- No encryption at rest for account or transaction data.
-- No lockout or rate-limiting after repeated failed PIN attempts.
-- No input validation on PIN format (any string up to 4 characters is accepted, not just digits).
-- Single-user console app — the file I/O isn't safe for concurrent access.
+This is an **educational project, not production banking software**.
 
-`accounts.dat` and `transactions.dat` are excluded via `.gitignore` so no real account data ever gets pushed to the repo.
+The current implementation intentionally keeps the design simple. In particular:
 
-## License
+- PINs are stored as plaintext in the local binary account file.
+- Account and transaction files are not encrypted at rest.
+- There is no login lockout or rate limiting.
+- PIN validation is intentionally basic.
+- File operations are designed for a single local user, not concurrent access.
+- There is no real bank/payment integration.
 
-Released under the [MIT License](LICENSE).
+**Never use real banking credentials, personal information, or real money with this project.**
 
-## Author
+## 🗺️ Roadmap
 
-Prabhjot Singh Gill
+Potential improvements for future versions:
+
+- [ ] Hash PINs instead of storing them directly
+- [ ] Add stronger input validation
+- [ ] Add automated unit/integration tests
+- [ ] Improve transaction atomicity and error handling
+- [ ] Add account statements/export
+- [ ] Add better terminal UI and colors
+- [ ] Add password/PIN retry limits
+- [ ] Improve cross-platform support
+- [ ] Add a small database-backed version for comparison
+
+## 🤝 Contributing
+
+Contributions are welcome — especially improvements that make the project safer, easier to understand, or more useful for C learners.
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines.
+
+If you build on this project, feel free to open an issue or pull request and share what you improved.
+
+## ⭐ Support the Project
+
+If this project helped you learn C, file handling, or basic application design, consider **starring the repository**. It helps other learners discover the project.
+
+Issues, pull requests, documentation improvements, and constructive feedback are also welcome.
+
+## 📄 License
+
+Released under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+## 👨‍💻 Author
+
+**Prabhjot Singh Gill**
+
+GitHub: [@prabhtheone](https://github.com/prabhtheone)
+
+---
+
+### Keywords
+
+`c` `c-language` `banking-system` `banking` `finance` `console-application` `file-handling` `file-io` `binary-files` `authentication` `transaction-history` `makefile` `github-actions` `beginner-project` `student-project` `learning-c` `systems-programming`
