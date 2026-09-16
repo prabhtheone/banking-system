@@ -11,7 +11,7 @@ $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
 
 test: $(TARGET)
-	./tests/smoke_test.sh
+	sh tests/smoke_test.sh
 
 clean:
 	rm -f $(TARGET) *.o accounts.dat transactions.dat
