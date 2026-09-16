@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,5 +17,11 @@ jobs:
       - name: Build
         run: make
 
+      - name: Run smoke test
+        run: make test
+
       - name: Strict compile check
         run: gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o /tmp/banking_system banking_system.c
+
+      - name: Clean generated files
+        run: make clean
