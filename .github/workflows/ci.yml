@@ -1,0 +1,21 @@
+name: C CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GCC and Make
+        run: sudo apt-get update && sudo apt-get install -y gcc make
+
+      - name: Build
+        run: make
+
+      - name: Strict compile check
+        run: gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o /tmp/banking_system banking_system.c
