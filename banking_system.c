@@ -71,6 +71,15 @@ void readLine(char *buf, size_t bufSize) {
     }
 }
 
+int isBlank(const char *text) {
+    if (text == NULL) return 1;
+    while (*text != '\0') {
+        if (!isspace((unsigned char)*text)) return 0;
+        text++;
+    }
+    return 1;
+}
+
 int readInt(const char *prompt, int *value) {
     char input[MAX_INPUT_LEN];
     char *end;
@@ -222,8 +231,8 @@ void createAccount(void) {
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
     readLine(acc.name, sizeof(acc.name));
-    if (acc.name[0] == '\0') {
-        printf("Name cannot be empty. Account creation cancelled.\n");
+    if (isBlank(acc.name)) {
+        printf("Name cannot be empty or whitespace-only. Account creation cancelled.\n");
         return;
     }
 
