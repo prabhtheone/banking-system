@@ -423,13 +423,24 @@ void viewTransactionHistory(int accNo) {
            "Timestamp", "Type", "Amount", "Balance", "Description");
     printf("--------------------------------------------------------------------------\n");
 
-    while (fread(&txn, sizeof(txn), 1, fp) == 1) {
-        if (txn.accountNumber == accNo) {
-            printf("%-20s %-15s %-12.2f %-12.2f %s\n",
-                   txn.timestamp, txn.type, txn.amount,
-                   txn.balanceAfter, txn.description);
-            found = 1;
+    while (1) {
+        size_t recordsRead = fread(&txn, sizeof(txn), 1, fp);
+        if (recordsRead == 1) {
+            if (txn.accountNumber == accNo) {
+                printf("%-20s %-15s %-12.2f %-12.2f %s\n",
+                       txn.timestamp, txn.type, txn.amount,
+                       txn.balanceAfter, txn.description);
+                found = 1;
+            }
+            continue;
         }
+
+        if (ferror(fp)) {
+            printf("Error: transaction history could not be read completely.\n");
+        } else if (!feof(fp)) {
+            printf("Error: transaction history contains an incomplete record.\n");
+        }
+        break;
     }
     fclose(fp);
     if (!found) printf("No transactions yet.\n");
