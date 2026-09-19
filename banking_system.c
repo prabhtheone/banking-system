@@ -436,7 +436,7 @@ void viewTransactionHistory(int accNo) {
 
         if (ferror(fp)) {
             printf("Error: transaction history could not be read completely.\n");
-        } else if (!feof(fp)) {
+        } else if (!feof(fp) || ftell(fp) % (long)sizeof(txn) != 0) {
             printf("Error: transaction history contains an incomplete record.\n");
         }
         break;
