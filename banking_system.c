@@ -132,6 +132,7 @@ int getNextAccountNumber(void) {
         if (acc.accountNumber > maxAcc) maxAcc = acc.accountNumber;
     }
     fclose(fp);
+    if (maxAcc == INT_MAX) return -1;
     return maxAcc + 1;
 }
 
@@ -217,6 +218,10 @@ void createAccount(void) {
 
     memset(&acc, 0, sizeof(acc));
     acc.accountNumber = getNextAccountNumber();
+    if (acc.accountNumber < 0) {
+        printf("Unable to allocate a new account number. Account creation cancelled.\n");
+        return;
+    }
     acc.active = 1;
 
     printf("\n=== Create New Account ===\n");
