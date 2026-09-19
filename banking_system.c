@@ -459,7 +459,7 @@ void listAllAccounts(void) {
 void deleteAccount(Account *acc) {
     char confirm[10];
 
-    if (acc->balance != 0.0) {
+    if (fabs(acc->balance) > 0.005) {
         printf("\nPlease withdraw or transfer the remaining %.2f before deleting the account.\n",
                acc->balance);
         return;
@@ -473,6 +473,8 @@ void deleteAccount(Account *acc) {
         return;
     }
 
+    /* Treat sub-cent floating-point residue as zero before deletion. */
+    if (fabs(acc->balance) <= 0.005) acc->balance = 0.0;
     acc->active = 0;
     if (!updateAccount(*acc)) {
         acc->active = 1;
