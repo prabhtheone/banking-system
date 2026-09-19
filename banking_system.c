@@ -194,6 +194,10 @@ int logTransaction(int accNo, const char *type, double amount,
     if (fp == NULL) return 0;
     memset(&txn, 0, sizeof(txn));
     txn.accountNumber = accNo;
+    if (type == NULL || desc == NULL) {
+        fclose(fp);
+        return 0;
+    }
     strncpy(txn.type, type, sizeof(txn.type) - 1);
     txn.amount = amount;
     txn.balanceAfter = balanceAfter;
