@@ -222,7 +222,14 @@ void createAccount(void) {
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
     readLine(acc.name, sizeof(acc.name));
-    if (acc.name[0] == '\0') {
+    int hasNameCharacter = 0;
+    for (size_t i = 0; acc.name[i] != '\0'; i++) {
+        if (!isspace((unsigned char)acc.name[i])) {
+            hasNameCharacter = 1;
+            break;
+        }
+    }
+    if (!hasNameCharacter) {
         printf("Name cannot be empty. Account creation cancelled.\n");
         return;
     }
