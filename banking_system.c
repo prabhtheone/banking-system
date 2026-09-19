@@ -313,7 +313,13 @@ void depositMoney(Account *acc) {
     }
     if (!logTransaction(acc->accountNumber, "DEPOSIT", amount,
                         acc->balance, "Cash deposit")) {
-        printf("Warning: deposit completed, but transaction history could not be saved.\n");
+        acc->balance -= amount;
+        if (!updateAccount(*acc)) {
+            printf("Critical error: deposit history failed and account rollback also failed.\n");
+        } else {
+            printf("Deposit cancelled: transaction history could not be saved.\n");
+        }
+        return;
     }
     printf("Deposit successful. New balance: %.2f\n", acc->balance);
 }
@@ -337,7 +343,13 @@ void withdrawMoney(Account *acc) {
     }
     if (!logTransaction(acc->accountNumber, "WITHDRAW", amount,
                         acc->balance, "Cash withdrawal")) {
-        printf("Warning: withdrawal completed, but transaction history could not be saved.\n");
+        acc->balance += amount;
+        if (!updateAccount(*acc)) {
+            printf("Critical error: withdrawal history failed and account rollback also failed.\n");
+        } else {
+            printf("Withdrawal cancelled: transaction history could not be saved.\n");
+        }
+        return;
     }
     printf("Withdrawal successful. New balance: %.2f\n", acc->balance);
 }
