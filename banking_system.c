@@ -178,8 +178,7 @@ int updateAccount(Account updated) {
                 fclose(fp);
                 return 0;
             }
-            fclose(fp);
-            return 1;
+            return fclose(fp) == 0;
         }
     }
     fclose(fp);
@@ -192,7 +191,7 @@ int saveNewAccount(const Account *acc) {
     fp = fopen(ACCOUNTS_FILE, "ab");
     if (fp == NULL) return 0;
     int success = fwrite(acc, sizeof(*acc), 1, fp) == 1;
-    fclose(fp);
+    if (fclose(fp) != 0) return 0;
     return success;
 }
 
@@ -217,7 +216,7 @@ int logTransaction(int accNo, const char *type, double amount,
     strncpy(txn.description, desc, sizeof(txn.description) - 1);
 
     int success = fwrite(&txn, sizeof(txn), 1, fp) == 1;
-    fclose(fp);
+    if (fclose(fp) != 0) return 0;
     return success;
 }
 
