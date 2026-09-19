@@ -15,4 +15,13 @@ printf '%s\n' "$output" | grep -q "Thank you for using the Banking System. Goodb
 [ -s accounts.dat ]
 [ -s transactions.dat ]
 
-printf '%s\n' "Smoke test passed."
+regression_output=$(printf '1\n   \n1\nRegression Test User\n1234\n100\n\n2\n1001\n1234\n2\n0.001\n\n7\n4\n' | ./banking_system)
+
+printf '%s\n' "$regression_output" | grep -q "Name cannot be empty or whitespace-only"
+printf '%s\n' "$regression_output" | grep -q "Invalid amount."
+
+printf 'x' > transactions.dat
+history_output=$(printf '2\n1001\n1234\n5\n\n7\n4\n' | ./banking_system)
+printf '%s\n' "$history_output" | grep -q "transaction history contains an incomplete record"
+
+printf '%s\n' "Smoke and regression tests passed."
