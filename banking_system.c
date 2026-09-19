@@ -32,6 +32,7 @@
 #define PIN_LEN 4
 #define PIN_BUF_LEN 16
 #define MAX_INPUT_LEN 128
+#define MIN_TRANSACTION_AMOUNT 0.01
 #define MAX_TRANSACTION_AMOUNT 1000000000.0
 
 typedef struct {
@@ -71,6 +72,15 @@ void readLine(char *buf, size_t bufSize) {
     }
 }
 
+int isBlank(const char *text) {
+    if (text == NULL) return 1;
+    while (*text != '\0') {
+        if (!isspace((unsigned char)*text)) return 0;
+        text++;
+    }
+    return 1;
+}
+
 int readInt(const char *prompt, int *value) {
     char input[MAX_INPUT_LEN];
     char *end;
@@ -102,7 +112,7 @@ int readAmount(const char *prompt, double *amount) {
     parsed = strtod(input, &end);
     while (isspace((unsigned char)*end)) end++;
     if (errno != 0 || *end != '\0' || !isfinite(parsed) ||
-        parsed <= 0.0 || parsed > MAX_TRANSACTION_AMOUNT) return 0;
+        parsed < MIN_TRANSACTION_AMOUNT || parsed > MAX_TRANSACTION_AMOUNT) return 0;
 
     *amount = parsed;
     return 1;
@@ -132,6 +142,7 @@ int getNextAccountNumber(void) {
         if (acc.accountNumber > maxAcc) maxAcc = acc.accountNumber;
     }
     fclose(fp);
+    if (maxAcc == INT_MAX) return -1;
     return maxAcc + 1;
 }
 
@@ -167,8 +178,7 @@ int updateAccount(Account updated) {
                 fclose(fp);
                 return 0;
             }
-            fclose(fp);
-            return 1;
+            return fclose(fp) == 0;
         }
     }
     fclose(fp);
@@ -181,7 +191,7 @@ int saveNewAccount(const Account *acc) {
     fp = fopen(ACCOUNTS_FILE, "ab");
     if (fp == NULL) return 0;
     int success = fwrite(acc, sizeof(*acc), 1, fp) == 1;
-    fclose(fp);
+    if (fclose(fp) != 0) return 0;
     return success;
 }
 
@@ -206,7 +216,7 @@ int logTransaction(int accNo, const char *type, double amount,
     strncpy(txn.description, desc, sizeof(txn.description) - 1);
 
     int success = fwrite(&txn, sizeof(txn), 1, fp) == 1;
-    fclose(fp);
+    if (fclose(fp) != 0) return 0;
     return success;
 }
 
@@ -217,13 +227,17 @@ void createAccount(void) {
 
     memset(&acc, 0, sizeof(acc));
     acc.accountNumber = getNextAccountNumber();
+    if (acc.accountNumber < 0) {
+        printf("Account creation failed: account number limit reached.\n");
+        return;
+    }
     acc.active = 1;
 
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
     readLine(acc.name, sizeof(acc.name));
-    if (acc.name[0] == '\0') {
-        printf("Name cannot be empty. Account creation cancelled.\n");
+    if (isBlank(acc.name)) {
+        printf("Name cannot be empty or whitespace-only. Account creation cancelled.\n");
         return;
     }
 
@@ -408,13 +422,24 @@ void viewTransactionHistory(int accNo) {
            "Timestamp", "Type", "Amount", "Balance", "Description");
     printf("--------------------------------------------------------------------------\n");
 
-    while (fread(&txn, sizeof(txn), 1, fp) == 1) {
-        if (txn.accountNumber == accNo) {
-            printf("%-20s %-15s %-12.2f %-12.2f %s\n",
-                   txn.timestamp, txn.type, txn.amount,
-                   txn.balanceAfter, txn.description);
-            found = 1;
+    while (1) {
+        size_t recordsRead = fread(&txn, sizeof(txn), 1, fp);
+        if (recordsRead == 1) {
+            if (txn.accountNumber == accNo) {
+                printf("%-20s %-15s %-12.2f %-12.2f %s\n",
+                       txn.timestamp, txn.type, txn.amount,
+                       txn.balanceAfter, txn.description);
+                found = 1;
+            }
+            continue;
         }
+
+        if (ferror(fp)) {
+            printf("Error: transaction history could not be read completely.\n");
+        } else if (!feof(fp) || ftell(fp) % (long)sizeof(txn) != 0) {
+            printf("Error: transaction history contains an incomplete record.\n");
+        }
+        break;
     }
     fclose(fp);
     if (!found) printf("No transactions yet.\n");
