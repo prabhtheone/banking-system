@@ -32,6 +32,7 @@
 #define PIN_LEN 4
 #define PIN_BUF_LEN 16
 #define MAX_INPUT_LEN 128
+#define MIN_TRANSACTION_AMOUNT 0.01
 #define MAX_TRANSACTION_AMOUNT 1000000000.0
 
 typedef struct {
@@ -111,7 +112,7 @@ int readAmount(const char *prompt, double *amount) {
     parsed = strtod(input, &end);
     while (isspace((unsigned char)*end)) end++;
     if (errno != 0 || *end != '\0' || !isfinite(parsed) ||
-        parsed <= 0.0 || parsed > MAX_TRANSACTION_AMOUNT) return 0;
+        parsed < MIN_TRANSACTION_AMOUNT || parsed > MAX_TRANSACTION_AMOUNT) return 0;
 
     *amount = parsed;
     return 1;
