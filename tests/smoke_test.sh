@@ -23,6 +23,9 @@ printf '%s\n' "$regression_output" | grep -q "Invalid amount."
 invalid_pin_output=$(printf '1\nControl Test\n12a4\n100\n\n4\n' | ./banking_system)
 printf '%s\n' "$invalid_pin_output" | grep -q "Invalid PIN."
 
+self_transfer_output=$(printf '2\n1001\n1234\n4\n1001\n\n7\n4\n' | ./banking_system)
+printf '%s\n' "$self_transfer_output" | grep -q "You cannot transfer to your own account."
+
 printf 'x' > transactions.dat
 history_output=$(printf '2\n1001\n1234\n5\n\n7\n4\n' | ./banking_system)
 printf '%s\n' "$history_output" | grep -q "transaction history contains an incomplete record"
