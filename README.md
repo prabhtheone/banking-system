@@ -67,7 +67,13 @@ Run the automated smoke test locally:
 make test
 ```
 
-The test creates a temporary demo account, verifies successful startup/account creation/exit, checks that runtime data is written, and cleans the generated files afterward.
+The test creates a temporary demo account, verifies successful startup/account creation/exit, checks that runtime data is written, and exercises invalid-input and self-transfer regressions. Generated files are cleaned automatically.
+
+For an additional local memory-safety check, run:
+
+```bash
+make sanitize
+```
 
 Every push and pull request also runs the build, smoke test, and strict compiler check through GitHub Actions.
 
