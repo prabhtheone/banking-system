@@ -81,6 +81,14 @@ int isBlank(const char *text) {
     return 1;
 }
 
+int isValidName(const char *name) {
+    if (name == NULL || isBlank(name)) return 0;
+    for (const unsigned char *p = (const unsigned char *)name; *p != '\0'; p++) {
+        if (iscntrl(*p)) return 0;
+    }
+    return 1;
+}
+
 int readInt(const char *prompt, int *value) {
     char input[MAX_INPUT_LEN];
     char *end;
@@ -236,7 +244,7 @@ void createAccount(void) {
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
     readLine(acc.name, sizeof(acc.name));
-    if (isBlank(acc.name)) {
+    if (!isValidName(acc.name)) {
         printf("Name cannot be empty or whitespace-only. Account creation cancelled.\n");
         return;
     }
