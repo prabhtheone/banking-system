@@ -430,7 +430,7 @@ void transferMoney(Account *sender) {
     printf("Transfer successful. New balance: %.2f\n", sender->balance);
 }
 
-void viewTransactionHistory(int accNo) {
+void viewTransactionHistory(const char *accNo) {
     FILE *fp = fopen(TRANSACTIONS_FILE, "rb");
     Transaction txn;
     int found = 0;
@@ -440,7 +440,7 @@ void viewTransactionHistory(int accNo) {
         return;
     }
 
-    printf("\n--- Transaction History for Account %d ---\n", accNo);
+    printf("\n--- Transaction History for Account %s ---\n", accNo);
     printf("%-20s %-15s %-12s %-12s %s\n",
            "Timestamp", "Type", "Amount", "Balance", "Description");
     printf("--------------------------------------------------------------------------\n");
@@ -483,7 +483,7 @@ void listAllAccounts(void) {
     printf("---------------------------------------------\n");
     while (fread(&acc, sizeof(acc), 1, fp) == 1) {
         if (acc.active) {
-            printf("%-15d %-25s %-12.2f\n",
+            printf("%-15s %-25s %-12.2f\n",
                    acc.accountNumber, acc.name, acc.balance);
             found = 1;
         }
