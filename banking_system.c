@@ -32,11 +32,13 @@
 #define PIN_LEN 4
 #define PIN_BUF_LEN 16
 #define MAX_INPUT_LEN 128
+#define ACCOUNT_YEAR 2026
+#define ACCOUNT_ID_LEN 16
 #define MIN_TRANSACTION_AMOUNT 0.01
 #define MAX_TRANSACTION_AMOUNT 1000000000.0
 
 typedef struct {
-    int accountNumber;
+    char accountNumber[ACCOUNT_ID_LEN];
     char name[MAX_NAME_LEN];
     char pin[PIN_LEN + 1];
     double balance;
@@ -44,7 +46,7 @@ typedef struct {
 } Account;
 
 typedef struct {
-    int accountNumber;
+    char accountNumber[ACCOUNT_ID_LEN];
     char type[20];
     double amount;
     double balanceAfter;
@@ -140,21 +142,31 @@ void pauseScreen(void) {
     readLine(input, sizeof(input));
 }
 
-int getNextAccountNumber(void) {
+int getNextAccountNumber(char *accountId, size_t accountIdSize) {
     FILE *fp = fopen(ACCOUNTS_FILE, "rb");
-    int maxAcc = 1000;
+    int maxSequence = 0;
     Account acc;
 
-    if (fp == NULL) return maxAcc + 1;
-    while (fread(&acc, sizeof(acc), 1, fp) == 1) {
-        if (acc.accountNumber > maxAcc) maxAcc = acc.accountNumber;
+    if (accountId == NULL || accountIdSize == 0) return 0;
+
+    if (fp != NULL) {
+        while (fread(&acc, sizeof(acc), 1, fp) == 1) {
+            int year;
+            int sequence;
+            if (sscanf(acc.accountNumber, "%d/%d", &year, &sequence) == 2 &&
+                year == ACCOUNT_YEAR && sequence > maxSequence) {
+                maxSequence = sequence;
+            }
+        }
+        fclose(fp);
     }
-    fclose(fp);
-    if (maxAcc == INT_MAX) return -1;
-    return maxAcc + 1;
+
+    if (maxSequence == INT_MAX) return 0;
+    snprintf(accountId, accountIdSize, "%d/%d", ACCOUNT_YEAR, maxSequence + 1);
+    return 1;
 }
 
-int findAccount(int accNo, Account *result) {
+int findAccount(const char *accNo, Account *result) {
     FILE *fp;
     Account acc;
 
@@ -163,7 +175,7 @@ int findAccount(int accNo, Account *result) {
     if (fp == NULL) return 0;
 
     while (fread(&acc, sizeof(acc), 1, fp) == 1) {
-        if (acc.accountNumber == accNo && acc.active) {
+        if (strcmp(acc.accountNumber, accNo) == 0 && acc.active) {
             *result = acc;
             fclose(fp);
             return 1;
@@ -179,7 +191,7 @@ int updateAccount(Account updated) {
 
     if (fp == NULL) return 0;
     while (fread(&acc, sizeof(acc), 1, fp) == 1) {
-        if (acc.accountNumber == updated.accountNumber) {
+        if (strcmp(acc.accountNumber, updated.accountNumber) == 0) {
             long pos = ftell(fp) - (long)sizeof(acc);
             if (pos < 0 || fseek(fp, pos, SEEK_SET) != 0 ||
                 fwrite(&updated, sizeof(updated), 1, fp) != 1) {
@@ -356,7 +368,7 @@ void checkBalance(const Account *acc) {
 }
 
 void transferMoney(Account *sender) {
-    int targetAcc;
+    char targetAcc[ACCOUNT_ID_LEN];
     double amount;
     Account receiver;
     double originalSenderBalance = sender->balance;
@@ -365,7 +377,7 @@ void transferMoney(Account *sender) {
         printf("Invalid account number.\n");
         return;
     }
-    if (targetAcc == sender->accountNumber) {
+    if (strcmp(targetAcc, sender->accountNumber) == 0) {
         printf("You cannot transfer to your own account.\n");
         return;
     }
@@ -402,12 +414,12 @@ void transferMoney(Account *sender) {
     }
 
     char desc[MAX_TXN_DESC];
-    snprintf(desc, sizeof(desc), "Transfer to account %d", targetAcc);
+    snprintf(desc, sizeof(desc), "Transfer to account %s", targetAcc);
     if (!logTransaction(sender->accountNumber, "TRANSFER_OUT", amount,
                         sender->balance, desc)) {
         printf("Warning: transfer completed, but sender history could not be saved.\n");
     }
-    snprintf(desc, sizeof(desc), "Transfer from account %d", sender->accountNumber);
+    snprintf(desc, sizeof(desc), "Transfer from account %s", sender->accountNumber);
     if (!logTransaction(receiver.accountNumber, "TRANSFER_IN", amount,
                         receiver.balance, desc)) {
         printf("Warning: transfer completed, but recipient history could not be saved.\n");
@@ -433,7 +445,7 @@ void viewTransactionHistory(int accNo) {
     while (1) {
         size_t recordsRead = fread(&txn, sizeof(txn), 1, fp);
         if (recordsRead == 1) {
-            if (txn.accountNumber == accNo) {
+            if (strcmp(txn.accountNumber, accNo) == 0) {
                 printf("%-20s %-15s %-12.2f %-12.2f %s\n",
                        txn.timestamp, txn.type, txn.amount,
                        txn.balanceAfter, txn.description);
@@ -486,7 +498,7 @@ void deleteAccount(Account *acc) {
         return;
     }
 
-    printf("\nDelete account %d? This action cannot be undone. (yes/no): ",
+    printf("\nDelete account %s? This action cannot be undone. (yes/no): ",
            acc->accountNumber);
     readLine(confirm, sizeof(confirm));
     if (strcmp(confirm, "yes") != 0) {
