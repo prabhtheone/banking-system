@@ -215,14 +215,14 @@ int saveNewAccount(const Account *acc) {
     return success;
 }
 
-int logTransaction(int accNo, const char *type, double amount,
+int logTransaction(const char *accNo, const char *type, double amount,
                    double balanceAfter, const char *desc) {
     FILE *fp = fopen(TRANSACTIONS_FILE, "ab");
     Transaction txn;
 
     if (fp == NULL) return 0;
     memset(&txn, 0, sizeof(txn));
-    txn.accountNumber = accNo;
+    strncpy(txn.accountNumber, accNo, sizeof(txn.accountNumber) - 1);
     strncpy(txn.type, type, sizeof(txn.type) - 1);
     txn.amount = amount;
     txn.balanceAfter = balanceAfter;
