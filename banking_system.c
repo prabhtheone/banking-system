@@ -246,8 +246,7 @@ void createAccount(void) {
     double initialDeposit;
 
     memset(&acc, 0, sizeof(acc));
-    acc.accountNumber = getNextAccountNumber();
-    if (acc.accountNumber < 0) {
+    if (!getNextAccountNumber(acc.accountNumber, sizeof(acc.accountNumber))) {
         printf("Account creation failed: account number limit reached.\n");
         return;
     }
@@ -285,16 +284,18 @@ void createAccount(void) {
     }
 
     printf("\nAccount created successfully!\n");
-    printf("Your account number is: %d\n", acc.accountNumber);
+    printf("Your account number is: %s\n", acc.accountNumber);
     printf("Please save this number; you'll need it to log in.\n");
     pauseScreen();
 }
 
 int authenticate(Account *acc) {
-    int accNo;
+    char accNo[ACCOUNT_ID_LEN];
     char pin[PIN_BUF_LEN];
 
-    if (!readInt("Enter account number: ", &accNo) || accNo <= 1000) {
+    printf("Enter account number (YYYY/N): ");
+    readLine(accNo, sizeof(accNo));
+    if (strchr(accNo, '/') == NULL) {
         printf("Invalid account number.\n");
         return 0;
     }
@@ -362,7 +363,7 @@ void withdrawMoney(Account *acc) {
 
 void checkBalance(const Account *acc) {
     printf("\n--- Account Summary ---\n");
-    printf("Account Number : %d\n", acc->accountNumber);
+    printf("Account Number : %s\n", acc->accountNumber);
     printf("Name           : %s\n", acc->name);
     printf("Balance        : %.2f\n", acc->balance);
 }
@@ -373,7 +374,9 @@ void transferMoney(Account *sender) {
     Account receiver;
     double originalSenderBalance = sender->balance;
 
-    if (!readInt("\nEnter recipient account number: ", &targetAcc)) {
+    printf("\nEnter recipient account number (YYYY/N): ");
+    readLine(targetAcc, sizeof(targetAcc));
+    if (targetAcc[0] == '\0') {
         printf("Invalid account number.\n");
         return;
     }
@@ -512,7 +515,7 @@ void deleteAccount(Account *acc) {
         printf("Account deletion failed.\n");
         return;
     }
-    printf("Account %d has been deleted.\n", acc->accountNumber);
+    printf("Account %s has been deleted.\n", acc->accountNumber);
 }
 
 void accountMenu(Account acc) {
@@ -525,7 +528,7 @@ void accountMenu(Account acc) {
             return;
         }
 
-        printf("\n========== Account Menu (Acc #%d) ==========\n", acc.accountNumber);
+        printf("\n========== Account Menu (Acc #%s) ==========\n", acc.accountNumber);
         printf("1. Check Balance\n");
         printf("2. Deposit\n");
         printf("3. Withdraw\n");
