@@ -12,7 +12,7 @@ A **console-based banking system written in C** that demonstrates account manage
 
 ## ✨ Features
 
-- 👤 Create bank accounts
+- 👤 Create bank accounts with year-based IDs (`2026/1`, `2026/2`, `2026/3`, ...)
 - 🔐 PIN-protected login with 4-digit validation
 - 💰 Deposit and withdraw money
 - 🔄 Transfer money between accounts
@@ -94,10 +94,10 @@ Set a 4-digit PIN: 1234
 Enter initial deposit amount: 5000
 
 Account created successfully!
-Your account number is: 1001
+Your account number is: 2026/1
 ```
 
-After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
+Account IDs use a readable `YYYY/N` format. New accounts in the current configured account year start at `2026/1` and continue sequentially (`2026/2`, `2026/3`, ...). The sequence is persisted with the account data, so deleted accounts do not cause an existing ID to be reused. After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
 
 ## 🧠 What This Project Demonstrates
 
@@ -107,6 +107,7 @@ This project is useful for students learning C because it combines several conce
 - Functions and modular program flow
 - Binary file read/write operations
 - Account lookup and record updates
+- Year-based sequential account ID generation (`YYYY/N`)
 - Transaction logging
 - Basic authentication
 - Robust line-based input parsing
@@ -164,6 +165,7 @@ Potential next improvements:
 - [ ] Add richer terminal UI and colors
 - [ ] Add login retry limits and lockout
 - [ ] Improve cross-platform tooling
+- [ ] Make the account year configurable instead of compile-time configured
 - [ ] Add a database-backed version for comparison
 
 ## 🤝 Contributing
