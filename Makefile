@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -Wpedantic -std=c11 -O2
 TARGET = banking_system
 SRC = banking_system.c
 
-.PHONY: all test sanitize clean
+.PHONY: all test sanitize verify clean
 
 all: $(TARGET)
 
@@ -17,6 +17,10 @@ sanitize:
 	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -o $(TARGET)-sanitized $(SRC)
 	ASAN_OPTIONS=detect_leaks=1 ./$(TARGET)-sanitized </dev/null || true
 	rm -f $(TARGET)-sanitized
+
+verify: $(TARGET)
+	$(MAKE) test
+	$(MAKE) sanitize
 
 clean:
 	rm -f $(TARGET) *.o accounts.dat transactions.dat
