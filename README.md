@@ -75,7 +75,13 @@ For an additional local memory-safety check, run:
 make sanitize
 ```
 
-Every push and pull request also runs the build, smoke test, and strict compiler check through GitHub Actions.
+For the full local verification workflow:
+
+```bash
+make verify
+```
+
+This builds the application, runs the smoke/regression suite, and performs the sanitizer build. Every push and pull request also runs the repository's GitHub Actions checks.
 
 ## 🖥️ Example
 
