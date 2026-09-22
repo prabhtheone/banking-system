@@ -6,6 +6,13 @@ All notable changes to this project are documented here.
 
 ### Added
 
+- Unified `make verify` workflow for build, regression tests, and sanitizer checks.
+- Consistent validation for `YYYY/N` account IDs during authentication and transfers.
+- Regression coverage for malformed account IDs.
+- Shared `.editorconfig` settings for contributors.
+
+### Added
+
 - Added sequential year-based account IDs starting at `2026/1` and continuing as `2026/2`, `2026/3`, and so on.
 - Updated login, transfers, transaction history, account directory, tests, and documentation to use the new `YYYY/N` account ID format.
 
