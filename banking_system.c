@@ -142,6 +142,16 @@ void pauseScreen(void) {
     readLine(input, sizeof(input));
 }
 
+int isValidAccountNumber(const char *accountId) {
+    int year;
+    int sequence;
+    char extra;
+
+    if (accountId == NULL) return 0;
+    if (sscanf(accountId, "%d/%d%c", &year, &sequence, &extra) != 2) return 0;
+    return year == ACCOUNT_YEAR && sequence > 0;
+}
+
 int getNextAccountNumber(char *accountId, size_t accountIdSize) {
     FILE *fp = fopen(ACCOUNTS_FILE, "rb");
     int maxSequence = 0;
@@ -295,8 +305,8 @@ int authenticate(Account *acc) {
 
     printf("Enter account number (YYYY/N): ");
     readLine(accNo, sizeof(accNo));
-    if (strchr(accNo, '/') == NULL) {
-        printf("Invalid account number.\n");
+    if (!isValidAccountNumber(accNo)) {
+        printf("Invalid account number. Expected format YYYY/N.\n");
         return 0;
     }
     if (!findAccount(accNo, acc)) {
@@ -376,8 +386,8 @@ void transferMoney(Account *sender) {
 
     printf("\nEnter recipient account number (YYYY/N): ");
     readLine(targetAcc, sizeof(targetAcc));
-    if (targetAcc[0] == '\0') {
-        printf("Invalid account number.\n");
+    if (!isValidAccountNumber(targetAcc)) {
+        printf("Invalid account number. Expected format YYYY/N.\n");
         return;
     }
     if (strcmp(targetAcc, sender->accountNumber) == 0) {
