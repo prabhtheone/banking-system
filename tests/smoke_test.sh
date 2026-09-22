@@ -31,3 +31,6 @@ history_output=$(printf '2\n2026/1\n1234\n5\n\n7\n4\n' | ./banking_system)
 printf '%s\n' "$history_output" | grep -q "transaction history contains an incomplete record"
 
 printf '%s\n' "Smoke and regression tests passed."
+
+invalid_account_output=$(printf '2\n2026\n4\n' | ./banking_system)
+printf '%s\n' "$invalid_account_output" | grep -q "Invalid account number. Expected format YYYY/N."
