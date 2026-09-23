@@ -12,6 +12,8 @@ All notable changes to this project are documented here.
 - Shared `.editorconfig` settings for contributors.
 - Sequential year-based account IDs starting at `2026/1` and continuing as `2026/2`, `2026/3`, and so on.
 - Updated login, transfers, transaction history, account directory, tests, and documentation to use the new `YYYY/N` account ID format.
+- Expanded security documentation with known limitations and safe-testing guidance.
+- Added README troubleshooting guidance for compiler, Make, runtime-file, and sanitizer issues.
 
 ### Planned
 
