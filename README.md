@@ -64,10 +64,10 @@ banking_system.exe
 Use the following commands during development:
 
 ```bash
-make        # build the application
-make test   # run the smoke/regression tests
+make          # build the application
+make test     # run the smoke/regression tests
 make sanitize # build with sanitizers
-make verify # run the complete local verification workflow
+make verify   # run the complete local verification workflow
 ```
 
 The repository also runs automated checks through GitHub Actions on pushes and pull requests.
@@ -95,6 +95,30 @@ make verify
 ```
 
 This builds the application, runs the smoke/regression suite, and performs the sanitizer build. Every push and pull request also runs the repository's GitHub Actions checks.
+
+## 🛠️ Troubleshooting
+
+### `make` is not recognized
+
+Install a C toolchain and Make. On Windows, MinGW/MSYS2 or another GCC-compatible environment can provide both.
+
+### Compiler not found
+
+Check that GCC is available in your terminal:
+
+```bash
+gcc --version
+```
+
+If the command is unavailable, install GCC and add it to your system PATH.
+
+### Tests leave runtime files behind
+
+The application normally creates `accounts.dat` and `transactions.dat` in the working directory. The automated smoke test uses temporary test data and cleans it up when it finishes.
+
+### Sanitizer build is unavailable
+
+`make sanitize` depends on compiler sanitizer support. If your toolchain does not provide AddressSanitizer, use `make test` and the normal `make` build, then report the toolchain details when opening an issue.
 
 ## 🖥️ Example
 
