@@ -10,11 +10,10 @@ All notable changes to this project are documented here.
 - Consistent validation for `YYYY/N` account IDs during authentication and transfers.
 - Regression coverage for malformed account IDs.
 - Shared `.editorconfig` settings for contributors.
-
-### Added
-
-- Added sequential year-based account IDs starting at `2026/1` and continuing as `2026/2`, `2026/3`, and so on.
+- Sequential year-based account IDs starting at `2026/1` and continuing as `2026/2`, `2026/3`, and so on.
 - Updated login, transfers, transaction history, account directory, tests, and documentation to use the new `YYYY/N` account ID format.
+
+### Planned
 
 - Continue improving security and test coverage.
 - Evaluate integer-based money handling.
