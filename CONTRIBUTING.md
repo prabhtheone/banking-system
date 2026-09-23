@@ -13,8 +13,20 @@ Thanks for helping improve **Banking System (C)**!
 
 - Keep changes focused and easy to review.
 - Compile with `make` and check for warnings.
+- Run `make verify` before submitting changes.
 - Do not commit `accounts.dat` or `transactions.dat`.
 - Explain what changed and why in the pull request description.
+- Include or update regression tests when behavior changes.
+
+## Testing checklist
+
+For changes affecting account creation, authentication, transfers, or persistence:
+
+```bash
+make verify
+```
+
+The verification workflow builds the project, runs the smoke/regression suite, and performs the sanitizer build.
 
 ## Ideas for contributions
 
