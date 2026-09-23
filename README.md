@@ -59,6 +59,19 @@ Windows (MinGW):
 banking_system.exe
 ```
 
+## 🔧 Development Workflow
+
+Use the following commands during development:
+
+```bash
+make        # build the application
+make test   # run the smoke/regression tests
+make sanitize # build with sanitizers
+make verify # run the complete local verification workflow
+```
+
+The repository also runs automated checks through GitHub Actions on pushes and pull requests.
+
 ## 🧪 Test
 
 Run the automated smoke test locally:
