@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Documentation
+
+- Clarified the typical local usage flow in the README.
+
 ### Added
 
 - Unified `make verify` workflow for build, regression tests, and sanitizer checks.
