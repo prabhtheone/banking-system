@@ -142,6 +142,15 @@ Your account number is: 2026/1
 
 Account IDs use a readable `YYYY/N` format. New accounts in the current configured account year start at `2026/1` and continue sequentially (`2026/2`, `2026/3`, ...). The sequence is persisted with the account data, so deleted accounts do not cause an existing ID to be reused. After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
 
+## 🧭 Typical Usage Flow
+
+1. Create an account and note the generated `YYYY/N` account number.
+2. Log in with the account number and 4-digit PIN.
+3. Use deposits, withdrawals, transfers, and transaction history from the account menu.
+4. Keep the account balance at zero before deleting the account.
+
+This flow is intended for local learning and testing; runtime data stays in the ignored `accounts.dat` and `transactions.dat` files.
+
 ## 🧠 What This Project Demonstrates
 
 This project is useful for students learning C because it combines several concepts in one application:
@@ -232,8 +241,6 @@ Released under the **MIT License**. See [LICENSE](LICENSE) for details.
 **Prabhjot Singh Gill**
 
 GitHub: [@prabhtheone](https://github.com/prabhtheone)
-
-please be happy to tell the issue 
 
 ---
 
