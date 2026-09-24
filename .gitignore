@@ -17,3 +17,8 @@ banking_system
 # OS files
 .DS_Store
 Thumbs.db
+
+# Sanitizer / coverage output
+*.gcda
+*.gcno
+*.profraw
