@@ -140,7 +140,7 @@ Account created successfully!
 Your account number is: 2026/1
 ```
 
-Account IDs use a readable `YYYY/N` format. New accounts in the current configured account year start at `2026/1` and continue sequentially (`2026/2`, `2026/3`, ...). The sequence is persisted with the account data, so deleted accounts do not cause an existing ID to be reused. After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
+Account IDs use a readable `YYYY/N` format. New accounts in the current configured account year start at `2026/1` and continue sequentially (`2026/2`, `2026/3`, ...). The sequence is persisted with the account data, so deleted accounts do not cause an existing ID to be reused. For example, if `2026/1` and `2026/2` already exist and `2026/1` is deleted, the next new account remains `2026/3`, not `2026/1`. After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
 
 ## 🧭 Typical Usage Flow
 
