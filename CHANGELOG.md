@@ -7,6 +7,7 @@ All notable changes to this project are documented here.
 ### Documentation
 
 - Clarified the typical local usage flow in the README.
+- Documented that deleted account numbers are not reused by the year-based sequence.
 
 ### Added
 
