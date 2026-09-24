@@ -17,6 +17,8 @@ Thanks for helping improve **Banking System (C)**!
 - Do not commit `accounts.dat` or `transactions.dat`.
 - Explain what changed and why in the pull request description.
 - Include or update regression tests when behavior changes.
+- Confirm that account IDs still follow the `YYYY/N` format when account-related behavior changes.
+- Check that failed validation does not leave unexpected runtime files or partial account updates.
 
 ## Testing checklist
 
@@ -27,6 +29,8 @@ make verify
 ```
 
 The verification workflow builds the project, runs the smoke/regression suite, and performs the sanitizer build.
+
+For account-ID changes, also verify examples such as `2026/1`, `2026/2`, and malformed values are handled consistently.
 
 ## Ideas for contributions
 
