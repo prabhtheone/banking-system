@@ -50,21 +50,32 @@
 #define MAX_TRANSACTION_AMOUNT 1000000000.0
 
 // Account groups all information belonging to one bank account.
-// Transaction groups all information about one banking event.
 typedef struct {
+    // Unique account ID such as 2026/1.
     char accountNumber[ACCOUNT_ID_LEN];
+    // Customer's name.
     char name[MAX_NAME_LEN];
+    // Four-digit PIN plus one character for the string terminator '\\0'.
     char pin[PIN_LEN + 1];
+    // Current account balance.
     double balance;
-    int active; /* 1 = active, 0 = deleted */
+    // 1 means active; 0 means soft-deleted.
+    int active;
 } Account;
 
+// Transaction groups all information about one banking event.
 typedef struct {
+    // Account that this transaction belongs to.
     char accountNumber[ACCOUNT_ID_LEN];
+    // Type such as DEPOSIT, WITHDRAW or TRANSFER_IN.
     char type[20];
+    // Amount involved in the transaction.
     double amount;
+    // Account balance after the transaction.
     double balanceAfter;
+    // Human-readable date and time.
     char timestamp[26];
+    // Short explanation of the transaction.
     char description[MAX_TXN_DESC];
 } Transaction;
 
