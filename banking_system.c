@@ -15,28 +15,42 @@
  * ============================================================
  */
 
+// ctype.h: character checking functions like isdigit(), isspace() and iscntrl().
 #include <ctype.h>
+// errno.h: tells us when number conversion functions fail.
 #include <errno.h>
+// float.h: gives floating-point limits such as DBL_MAX.
 #include <float.h>
+// limits.h: gives integer limits such as INT_MAX and INT_MIN.
 #include <limits.h>
+// math.h: provides isfinite() to reject infinity/NaN money values.
 #include <math.h>
+// stdio.h: input/output and file functions such as printf(), fopen(), fread() and fwrite().
 #include <stdio.h>
+// stdlib.h: general utilities and string-to-number conversion functions.
 #include <stdlib.h>
+// string.h: string and memory functions such as strcmp(), strlen(), strncpy() and memset().
 #include <string.h>
+// time.h: used to create transaction date/time stamps.
 #include <time.h>
 
+// File where Account structures are permanently stored.
 #define ACCOUNTS_FILE "accounts.dat"
+// File where Transaction structures are permanently stored.
 #define TRANSACTIONS_FILE "transactions.dat"
 #define MAX_NAME_LEN 50
 #define MAX_TXN_DESC 100
 #define PIN_LEN 4
 #define PIN_BUF_LEN 16
 #define MAX_INPUT_LEN 128
+// All newly generated account IDs use this year.
 #define ACCOUNT_YEAR 2026
 #define ACCOUNT_ID_LEN 16
 #define MIN_TRANSACTION_AMOUNT 0.01
 #define MAX_TRANSACTION_AMOUNT 1000000000.0
 
+// Account groups all information belonging to one bank account.
+// Transaction groups all information about one banking event.
 typedef struct {
     char accountNumber[ACCOUNT_ID_LEN];
     char name[MAX_NAME_LEN];
@@ -54,12 +68,14 @@ typedef struct {
     char description[MAX_TXN_DESC];
 } Transaction;
 
+// Removes extra characters left in the keyboard input buffer.
 void clearInputBuffer(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {
     }
 }
 
+// Safely reads text from the user and removes the final newline.
 void readLine(char *buf, size_t bufSize) {
     if (buf == NULL || bufSize == 0) return;
     if (fgets(buf, (int)bufSize, stdin) == NULL) {
@@ -74,6 +90,7 @@ void readLine(char *buf, size_t bufSize) {
     }
 }
 
+// Returns 1 when text is empty/only whitespace; otherwise returns 0.
 int isBlank(const char *text) {
     if (text == NULL) return 1;
     while (*text != '\0') {
@@ -83,6 +100,7 @@ int isBlank(const char *text) {
     return 1;
 }
 
+// Checks whether a customer's name is acceptable.
 int isValidName(const char *name) {
     if (name == NULL || isBlank(name)) return 0;
     for (const unsigned char *p = (const unsigned char *)name; *p != '\0'; p++) {
@@ -91,6 +109,7 @@ int isValidName(const char *name) {
     return 1;
 }
 
+// Reads a whole number from the user and validates it.
 int readInt(const char *prompt, int *value) {
     char input[MAX_INPUT_LEN];
     char *end;
@@ -109,6 +128,7 @@ int readInt(const char *prompt, int *value) {
     return 1;
 }
 
+// Reads and validates a money amount.
 int readAmount(const char *prompt, double *amount) {
     char input[MAX_INPUT_LEN];
     char *end;
@@ -128,6 +148,7 @@ int readAmount(const char *prompt, double *amount) {
     return 1;
 }
 
+// Checks that the PIN contains exactly four digits.
 int isValidPin(const char *pin) {
     if (pin == NULL || strlen(pin) != PIN_LEN) return 0;
     for (size_t i = 0; i < PIN_LEN; i++) {
@@ -136,12 +157,14 @@ int isValidPin(const char *pin) {
     return 1;
 }
 
+// Pauses the program until the user presses Enter.
 void pauseScreen(void) {
     char input[4];
     printf("\nPress Enter to continue...");
     readLine(input, sizeof(input));
 }
 
+// Checks that an account ID follows the 2026/N format.
 int isValidAccountNumber(const char *accountId) {
     int year;
     int sequence;
@@ -152,6 +175,7 @@ int isValidAccountNumber(const char *accountId) {
     return year == ACCOUNT_YEAR && sequence > 0;
 }
 
+// Finds the largest existing sequence and creates the next account ID.
 int getNextAccountNumber(char *accountId, size_t accountIdSize) {
     FILE *fp = fopen(ACCOUNTS_FILE, "rb");
     int maxSequence = 0;
@@ -176,6 +200,7 @@ int getNextAccountNumber(char *accountId, size_t accountIdSize) {
     return 1;
 }
 
+// Searches accounts.dat and copies the matching active account into result.
 int findAccount(const char *accNo, Account *result) {
     FILE *fp;
     Account acc;
@@ -195,6 +220,7 @@ int findAccount(const char *accNo, Account *result) {
     return 0;
 }
 
+// Finds an existing account record and replaces it with updated data.
 int updateAccount(Account updated) {
     FILE *fp = fopen(ACCOUNTS_FILE, "rb+");
     Account acc;
@@ -215,6 +241,7 @@ int updateAccount(Account updated) {
     return 0;
 }
 
+// Appends a brand-new account to accounts.dat.
 int saveNewAccount(const Account *acc) {
     FILE *fp;
     if (acc == NULL) return 0;
@@ -225,6 +252,7 @@ int saveNewAccount(const Account *acc) {
     return success;
 }
 
+// Appends one transaction record to transactions.dat.
 int logTransaction(const char *accNo, const char *type, double amount,
                    double balanceAfter, const char *desc) {
     FILE *fp = fopen(TRANSACTIONS_FILE, "ab");
@@ -250,17 +278,19 @@ int logTransaction(const char *accNo, const char *type, double amount,
     return success;
 }
 
+// Handles the complete new-account creation process.
 void createAccount(void) {
     Account acc;
     char pinInput[PIN_BUF_LEN];
     double initialDeposit;
 
+    // Clears the Account structure so its fields start with known values.
     memset(&acc, 0, sizeof(acc));
     if (!getNextAccountNumber(acc.accountNumber, sizeof(acc.accountNumber))) {
         printf("Account creation failed: account number limit reached.\n");
         return;
     }
-    acc.active = 1;
+    // Marks the newly created account as active.
 
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
@@ -282,13 +312,13 @@ void createAccount(void) {
         printf("Invalid amount. Account creation cancelled.\n");
         return;
     }
-    acc.balance = initialDeposit;
+    // Stores the initial deposit as the starting balance.
 
-    if (!saveNewAccount(&acc)) {
+    // Save the new account to the binary account file.
         printf("Error: could not save the account.\n");
         return;
     }
-    if (!logTransaction(acc.accountNumber, "DEPOSIT", acc.balance,
+    // Record the initial deposit in transaction history.
                         acc.balance, "Initial deposit")) {
         printf("Warning: account created, but transaction history could not be saved.\n");
     }
@@ -299,6 +329,7 @@ void createAccount(void) {
     pauseScreen();
 }
 
+// Logs a user in by checking account number and PIN.
 int authenticate(Account *acc) {
     char accNo[ACCOUNT_ID_LEN];
     char pin[PIN_BUF_LEN];
@@ -323,6 +354,7 @@ int authenticate(Account *acc) {
     return 1;
 }
 
+// Adds money to an account and records the deposit.
 void depositMoney(Account *acc) {
     double amount;
     if (!readAmount("\nEnter amount to deposit: ", &amount)) {
@@ -334,9 +366,9 @@ void depositMoney(Account *acc) {
         return;
     }
 
-    acc->balance += amount;
-    if (!updateAccount(*acc)) {
-        acc->balance -= amount;
+    // Increase the balance by the deposit amount.
+    // Write the changed account balance back to accounts.dat.
+        // Decrease the balance by the withdrawal/transfer amount.
         printf("Deposit failed: account could not be updated.\n");
         return;
     }
@@ -347,6 +379,7 @@ void depositMoney(Account *acc) {
     printf("Deposit successful. New balance: %.2f\n", acc->balance);
 }
 
+// Removes money from an account after checking the balance.
 void withdrawMoney(Account *acc) {
     double amount;
     if (!readAmount("\nEnter amount to withdraw: ", &amount)) {
@@ -371,6 +404,7 @@ void withdrawMoney(Account *acc) {
     printf("Withdrawal successful. New balance: %.2f\n", acc->balance);
 }
 
+// Displays the current account information without modifying it.
 void checkBalance(const Account *acc) {
     printf("\n--- Account Summary ---\n");
     printf("Account Number : %s\n", acc->accountNumber);
@@ -378,6 +412,7 @@ void checkBalance(const Account *acc) {
     printf("Balance        : %.2f\n", acc->balance);
 }
 
+// Moves money from the logged-in account to another account.
 void transferMoney(Account *sender) {
     char targetAcc[ACCOUNT_ID_LEN];
     double amount;
@@ -412,10 +447,10 @@ void transferMoney(Account *sender) {
     }
 
     sender->balance -= amount;
-    receiver.balance += amount;
+    // Increase the recipient's balance by the transfer amount.
 
     if (!updateAccount(*sender)) {
-        sender->balance = originalSenderBalance;
+        // Roll back the sender if the transfer cannot be completed.
         printf("Transfer failed: sender account could not be updated.\n");
         return;
     }
@@ -440,6 +475,7 @@ void transferMoney(Account *sender) {
     printf("Transfer successful. New balance: %.2f\n", sender->balance);
 }
 
+// Reads transaction records and displays only this account's transactions.
 void viewTransactionHistory(const char *accNo) {
     FILE *fp = fopen(TRANSACTIONS_FILE, "rb");
     Transaction txn;
@@ -478,6 +514,7 @@ void viewTransactionHistory(const char *accNo) {
     if (!found) printf("No transactions yet.\n");
 }
 
+// Displays all active accounts; this is intended as a demo feature.
 void listAllAccounts(void) {
     FILE *fp = fopen(ACCOUNTS_FILE, "rb");
     Account acc;
@@ -502,6 +539,7 @@ void listAllAccounts(void) {
     if (!found) printf("No active accounts.\n");
 }
 
+// Soft-deletes an account by changing active from 1 to 0.
 void deleteAccount(Account *acc) {
     char confirm[10];
 
@@ -519,7 +557,7 @@ void deleteAccount(Account *acc) {
         return;
     }
 
-    acc->active = 0;
+    // Mark the account as deleted instead of physically removing its record.
     if (!updateAccount(*acc)) {
         acc->active = 1;
         printf("Account deletion failed.\n");
@@ -534,6 +572,7 @@ void deleteAccount(Account *acc) {
     printf("Account %s has been deleted.\n", acc->accountNumber);
 }
 
+// Controls all actions available after a successful login.
 void accountMenu(Account acc) {
     int choice;
     int loggedIn = 1;
@@ -558,7 +597,8 @@ void accountMenu(Account acc) {
             continue;
         }
 
-        switch (choice) {
+        // switch chooses the action matching the menu number.
+switch (choice) {
             case 1: checkBalance(&acc); break;
             case 2: depositMoney(&acc); break;
             case 3: withdrawMoney(&acc); break;
@@ -580,6 +620,7 @@ void accountMenu(Account acc) {
     }
 }
 
+// Controls the top-level banking system menu.
 void mainMenu(void) {
     int choice;
     int running = 1;
@@ -598,7 +639,8 @@ void mainMenu(void) {
         }
 
         Account acc;
-        switch (choice) {
+        // switch chooses the action matching the menu number.
+switch (choice) {
             case 1: createAccount(); break;
             case 2:
                 if (authenticate(&acc)) {
@@ -622,6 +664,7 @@ void mainMenu(void) {
     }
 }
 
+// Program execution starts here.
 int main(void) {
     printf("Welcome to the C Banking System\n");
     mainMenu();
