@@ -525,6 +525,12 @@ void deleteAccount(Account *acc) {
         printf("Account deletion failed.\n");
         return;
     }
+
+    if (!logTransaction(acc->accountNumber, "ACCOUNT_DELETED", 0.0,
+                        acc->balance, "Account deleted")) {
+        printf("Warning: account deleted, but deletion could not be added to transaction history.\n");
+    }
+
     printf("Account %s has been deleted.\n", acc->accountNumber);
 }
 
