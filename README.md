@@ -167,6 +167,18 @@ This project is useful for students learning C because it combines several conce
 - Make-based compilation and testing
 - Continuous integration with GitHub Actions
 
+## 🧩 Architecture Overview
+
+The application follows a simple file-backed design:
+
+```text
+User Input → Menu/Validation → Account Operations → File Storage
+                              ↓
+                       Transaction Logging
+```
+
+Core responsibilities are kept in `banking_system.c`, while the `tests/` directory contains regression checks and `.github/workflows/` runs the automated CI workflow.
+
 ## 📁 Project Structure
 
 ```text
