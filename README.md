@@ -74,27 +74,17 @@ The repository also runs automated checks through GitHub Actions on pushes and p
 
 ## 🧪 Test
 
-Run the automated smoke test locally:
+The project uses a small regression/smoke suite to catch common failures in account creation, startup, invalid input, and transfer behavior.
 
-```bash
-make test
-```
+### What is checked
 
-The test creates a temporary demo account, verifies successful startup/account creation/exit, checks that runtime data is written, and exercises invalid-input and self-transfer regressions. Generated files are cleaned automatically.
+- Successful compilation with the configured C11 flags
+- Account creation and persisted runtime data
+- Clean program startup and exit
+- Invalid input handling
+- Self-transfer rejection
+- Temporary test-data cleanup
 
-For an additional local memory-safety check, run:
-
-```bash
-make sanitize
-```
-
-For the full local verification workflow:
-
-```bash
-make verify
-```
-
-This builds the application, runs the smoke/regression suite, and performs the sanitizer build. Every push and pull request also runs the repository's GitHub Actions checks.
 
 ## 🛠️ Troubleshooting
 
