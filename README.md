@@ -226,6 +226,15 @@ Potential next improvements:
 
 Contributions are welcome — especially improvements that make the project safer, easier to understand, or more useful for C learners.
 
+### Before opening a pull request
+
+1. Build the project with `make`.
+2. Run `make test` to execute the regression checks.
+3. Run `make verify` when changing core behavior.
+4. Keep generated runtime files such as `accounts.dat` and `transactions.dat` out of commits.
+5. Explain the behavior change and testing performed in the pull request description.
+
+
 See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines. Bug reports and feature ideas can also use the repository's issue templates.
 
 ## ⭐ Support the Project
