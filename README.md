@@ -85,7 +85,6 @@ The project uses a small regression/smoke suite to catch common failures in acco
 - Self-transfer rejection
 - Temporary test-data cleanup
 
-
 ## 🛠️ Troubleshooting
 
 ### `make` is not recognized
@@ -233,7 +232,6 @@ Contributions are welcome — especially improvements that make the project safe
 3. Run `make verify` when changing core behavior.
 4. Keep generated runtime files such as `accounts.dat` and `transactions.dat` out of commits.
 5. Explain the behavior change and testing performed in the pull request description.
-
 
 See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines. Bug reports and feature ideas can also use the repository's issue templates.
 
