@@ -32,6 +32,18 @@ The verification workflow builds the project, runs the smoke/regression suite, a
 
 For account-ID changes, also verify examples such as `2026/1`, `2026/2`, and malformed values are handled consistently.
 
+## Commit guidelines
+
+Use a short, descriptive commit message that explains the purpose of the change. Prefer the repository's existing conventional format, such as:
+
+```text
+docs: improve contributor guidance
+fix: validate transfer input
+test: add account ID regression coverage
+```
+
+Keep unrelated changes in separate commits so each change is easy to review or revert.
+
 ## Ideas for contributions
 
 - Stronger input validation
