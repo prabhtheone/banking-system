@@ -8,6 +8,7 @@ All notable changes to this project are documented here.
 
 - Clarified the typical local usage flow in the README.
 - Documented that deleted account numbers are not reused by the year-based sequence.
+- Clarified contributor commit-message conventions.
 
 ### Added
 
