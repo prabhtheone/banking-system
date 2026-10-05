@@ -19,6 +19,16 @@ The following limitations are intentional and documented so contributors know wh
 
 These limitations make the project suitable for learning C, file I/O, validation, testing, and basic application architecture—not for handling real financial information.
 
+## Security review checklist
+
+Before submitting security-related changes, contributors should verify:
+
+- No real credentials or personal financial data are included in tests or commits.
+- Input validation rejects malformed account IDs and invalid numeric values.
+- Runtime data files are not added to version control.
+- Changes do not expose additional account or transaction data unnecessarily.
+- `make verify` passes after the change.
+
 ## Safe testing
 
 Use synthetic names, test PINs, and fictional balances only. Runtime files such as `accounts.dat` and `transactions.dat` should remain local and should not be committed to the repository.
