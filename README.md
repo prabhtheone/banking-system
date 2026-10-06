@@ -105,6 +105,22 @@ If the command is unavailable, install GCC and add it to your system PATH.
 
 The application normally creates `accounts.dat` and `transactions.dat` in the working directory. The automated smoke test uses temporary test data and cleans it up when it finishes.
 
+If you want to reset a local demo manually, first make sure the program is not running, then remove the generated runtime files:
+
+Linux/macOS/WSL:
+
+```bash
+rm -f accounts.dat transactions.dat
+```
+
+Windows PowerShell:
+
+```powershell
+Remove-Item accounts.dat, transactions.dat -ErrorAction SilentlyContinue
+```
+
+These files contain local demo data and should remain untracked; do not commit them to the repository.
+
 ### Sanitizer build is unavailable
 
 `make sanitize` depends on compiler sanitizer support. If your toolchain does not provide AddressSanitizer, use `make test` and the normal `make` build, then report the toolchain details when opening an issue.
