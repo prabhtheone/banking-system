@@ -9,12 +9,13 @@ All notable changes to this project are documented here.
 - Clarified the typical local usage flow in the README.
 - Documented that deleted account numbers are not reused by the year-based sequence.
 - Clarified contributor commit-message conventions.
+- Documented the expanded regression coverage for invalid account sequence values.
 
 ### Added
 
 - Unified `make verify` workflow for build, regression tests, and sanitizer checks.
 - Consistent validation for `YYYY/N` account IDs during authentication and transfers.
-- Regression coverage for malformed account IDs.
+- Regression coverage for malformed account IDs, including non-positive sequence values.
 - Shared `.editorconfig` settings for contributors.
 - Sequential year-based account IDs starting at `2026/1` and continuing as `2026/2`, `2026/3`, and so on.
 - Updated login, transfers, transaction history, account directory, tests, and documentation to use the new `YYYY/N` account ID format.
