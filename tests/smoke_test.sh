@@ -34,3 +34,6 @@ printf '%s\n' "Smoke and regression tests passed."
 
 invalid_account_output=$(printf '2\n2026\n4\n' | ./banking_system)
 printf '%s\n' "$invalid_account_output" | grep -q "Invalid account number. Expected format YYYY/N."
+
+invalid_sequence_output=$(printf '2\n2026/0\n4\n' | ./banking_system)
+printf '%s\n' "$invalid_sequence_output" | grep -q "Invalid account number. Expected format YYYY/N."
