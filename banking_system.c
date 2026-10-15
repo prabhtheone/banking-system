@@ -302,6 +302,7 @@ void createAccount(void) {
         return;
     }
     // Marks the newly created account as active.
+    acc.active = 1;
 
     printf("\n=== Create New Account ===\n");
     printf("Enter full name: ");
@@ -324,12 +325,15 @@ void createAccount(void) {
         return;
     }
     // Stores the initial deposit as the starting balance.
+    acc.balance = initialDeposit;
 
     // Save the new account to the binary account file.
+    if (!saveNewAccount(&acc)) {
         printf("Error: could not save the account.\n");
         return;
     }
     // Record the initial deposit in transaction history.
+    if (!logTransaction(acc.accountNumber, "DEPOSIT", initialDeposit,
                         acc.balance, "Initial deposit")) {
         printf("Warning: account created, but transaction history could not be saved.\n");
     }
@@ -378,8 +382,10 @@ void depositMoney(Account *acc) {
     }
 
     // Increase the balance by the deposit amount.
+    acc->balance += amount;
     // Write the changed account balance back to accounts.dat.
-        // Decrease the balance by the withdrawal/transfer amount.
+    if (!updateAccount(*acc)) {
+        acc->balance -= amount;
         printf("Deposit failed: account could not be updated.\n");
         return;
     }
@@ -459,6 +465,7 @@ void transferMoney(Account *sender) {
 
     sender->balance -= amount;
     // Increase the recipient's balance by the transfer amount.
+    receiver.balance += amount;
 
     if (!updateAccount(*sender)) {
         // Roll back the sender if the transfer cannot be completed.
@@ -569,6 +576,7 @@ void deleteAccount(Account *acc) {
     }
 
     // Mark the account as deleted instead of physically removing its record.
+    acc->active = 0;
     if (!updateAccount(*acc)) {
         acc->active = 1;
         printf("Account deletion failed.\n");
