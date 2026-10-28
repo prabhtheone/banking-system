@@ -30,6 +30,10 @@ make verify
 
 The verification workflow builds the project, runs the smoke/regression suite, and performs the sanitizer build.
 
+The smoke/regression suite runs the program from a temporary working directory and removes that directory when it finishes. This keeps test-generated `accounts.dat` and `transactions.dat` files separate from any runtime data you may already have in the repository folder.
+
+The suite checks account creation and validation, a successful deposit followed by a withdrawal (including the resulting balance), self-transfer rejection, malformed account IDs, and incomplete transaction-history records. Use fictional names, PINs, and balances only.
+
 For account-ID changes, also verify examples such as `2026/1`, `2026/2`, and malformed values are handled consistently.
 
 ## Commit guidelines
