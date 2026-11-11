@@ -13,6 +13,10 @@ A **console-based banking system written in C** that demonstrates account manage
 ## ✨ Features
 
 - 👤 Create bank accounts with year-based IDs (`2026/1`, `2026/2`, `2026/3`, ...)
+- 🖥️ Styled terminal interface with reusable ANSI color helpers and `NO_COLOR` support
+- 📊 Customer dashboard with account summary and the five most recent transactions
+- 🔑 Change PIN from the authenticated account menu
+- 🚦 Limit each login session to three authentication attempts
 - 🔐 PIN-protected login with 4-digit validation
 - 💰 Deposit and withdraw money
 - 🔄 Transfer money between accounts
@@ -197,6 +201,7 @@ Core responsibilities are kept in `banking_system.c`, while the `tests/` directo
 ├── tests/
 │   └── smoke_test.sh
 ├── banking_system.c
+├── ui.h
 ├── Makefile
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -215,7 +220,8 @@ The current implementation intentionally keeps the design simple. In particular:
 
 - PINs are stored as plaintext in the local binary account file.
 - Account and transaction files are not encrypted at rest.
-- There is no login lockout or rate limiting.
+- The three-attempt login limit applies only to one login session; it is not persistent rate limiting or a production-grade lockout.
+- PINs remain stored in plaintext in the local binary account file.
 - The demo account directory displays account data and should not be treated as a real bank interface.
 - File operations are designed for a simple local application, not concurrent users.
 - There is no real bank/payment integration.
@@ -231,7 +237,10 @@ Potential next improvements:
 - [ ] Add comprehensive automated unit/integration tests
 - [ ] Make transfers fully atomic with stronger storage guarantees
 - [ ] Add account statements/export
-- [ ] Add richer terminal UI and colors
+- [x] Add a styled terminal UI and customer dashboard
+- [x] Add customer PIN change and a three-attempt login limit
+- [ ] Add account statements/export
+- [ ] Add transaction filtering by date and type
 - [ ] Add login retry limits and lockout
 - [ ] Improve cross-platform tooling
 - [ ] Make the account year configurable instead of compile-time configured
