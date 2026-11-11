@@ -7,7 +7,7 @@ SRC = banking_system.c
 
 all: $(TARGET)
 
-$(TARGET): $(SRC)
+$(TARGET): $(SRC) ui.h
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
 
 test: $(TARGET)
