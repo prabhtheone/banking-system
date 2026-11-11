@@ -13,6 +13,10 @@ A **console-based banking system written in C** that demonstrates account manage
 ## ✨ Features
 
 - 👤 Create bank accounts with year-based IDs (`2026/1`, `2026/2`, `2026/3`, ...)
+- 🖥️ Styled terminal interface with reusable ANSI color helpers and `NO_COLOR` support
+- 📊 Customer dashboard with account summary and the five most recent transactions
+- 🔑 Change PIN from the authenticated account menu
+- 🚦 Limit each login session to three authentication attempts
 - 🔐 PIN-protected login with 4-digit validation
 - 💰 Deposit and withdraw money
 - 🔄 Transfer money between accounts
@@ -231,7 +235,10 @@ Potential next improvements:
 - [ ] Add comprehensive automated unit/integration tests
 - [ ] Make transfers fully atomic with stronger storage guarantees
 - [ ] Add account statements/export
-- [ ] Add richer terminal UI and colors
+- [x] Add a styled terminal UI and customer dashboard
+- [x] Add customer PIN change and a three-attempt login limit
+- [ ] Add account statements/export
+- [ ] Add transaction filtering by date and type
 - [ ] Add login retry limits and lockout
 - [ ] Improve cross-platform tooling
 - [ ] Make the account year configurable instead of compile-time configured
