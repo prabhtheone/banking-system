@@ -25,7 +25,7 @@ printf '%s\n' "$regression_output" | grep -q "Name cannot be empty or whitespace
 printf '%s\n' "$regression_output" | grep -q "Invalid amount."
 
 # Confirm a successful deposit and withdrawal persist the expected balance.
-money_flow_output=$(printf '2\n2026/1\n1234\n2\n50\n\n3\n20\n\n1\n\n7\n4\n' | "$program")
+money_flow_output=$(printf '2\n2026/1\n1234\n3\n50\n\n4\n20\n\n2\n\n9\n4\n' | "$program")
 printf '%s\n' "$money_flow_output" | grep -q "Deposit successful. New balance: 150.00"
 printf '%s\n' "$money_flow_output" | grep -q "Withdrawal successful. New balance: 130.00"
 printf '%s\n' "$money_flow_output" | grep -q "Balance        : 130.00"
@@ -33,11 +33,11 @@ printf '%s\n' "$money_flow_output" | grep -q "Balance        : 130.00"
 invalid_pin_output=$(printf '1\nControl Test\n12a4\n100\n\n4\n' | "$program")
 printf '%s\n' "$invalid_pin_output" | grep -q "Invalid PIN."
 
-self_transfer_output=$(printf '2\n2026/1\n1234\n4\n2026/1\n\n7\n4\n' | "$program")
+self_transfer_output=$(printf '2\n2026/1\n1234\n5\n2026/1\n\n9\n4\n' | "$program")
 printf '%s\n' "$self_transfer_output" | grep -q "You cannot transfer to your own account."
 
 printf 'x' > transactions.dat
-history_output=$(printf '2\n2026/1\n1234\n5\n\n7\n4\n' | "$program")
+history_output=$(printf '2\n2026/1\n1234\n6\n\n9\n4\n' | "$program")
 printf '%s\n' "$history_output" | grep -q "transaction history contains an incomplete record"
 
 invalid_account_output=$(printf '2\n2026\n4\n' | "$program")
@@ -47,3 +47,9 @@ invalid_sequence_output=$(printf '2\n2026/0\n4\n' | "$program")
 printf '%s\n' "$invalid_sequence_output" | grep -q "Invalid account number. Expected format YYYY/N."
 
 printf '%s\n' "Smoke and regression tests passed."
+
+# Verify PIN changes are persisted and the new PIN can authenticate.
+pin_change_output=$(printf '2\\n2026/1\\n1234\\n8\\n1234\\n5678\\n5678\\n\\n9\\n4\\n' | "$program")
+printf '%s\\n' "$pin_change_output" | grep -q "Your PIN has been changed successfully"
+new_pin_login_output=$(printf '2\\n2026/1\\n5678\\n9\\n4\\n' | "$program")
+printf '%s\\n' "$new_pin_login_output" | grep -q "Welcome, CI Test User!"
