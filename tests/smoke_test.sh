@@ -19,7 +19,7 @@ printf '%s\n' "$output" | grep -q "Thank you for using the Banking System. Goodb
 [ -s accounts.dat ]
 [ -s transactions.dat ]
 
-regression_output=$(printf '1\n   \n1\nRegression Test User\n1234\n100\n\n2\n2026/1\n1234\n2\n0.001\n\n7\n4\n' | "$program")
+regression_output=$(printf '1\n   \n1\nRegression Test User\n1234\n100\n\n2\n2026/1\n1234\n3\n0.001\n\n9\n4\n' | "$program")
 
 printf '%s\n' "$regression_output" | grep -q "Name cannot be empty or whitespace-only"
 printf '%s\n' "$regression_output" | grep -q "Invalid amount."
@@ -40,10 +40,10 @@ printf 'x' > transactions.dat
 history_output=$(printf '2\n2026/1\n1234\n6\n\n9\n4\n' | "$program")
 printf '%s\n' "$history_output" | grep -q "transaction history contains an incomplete record"
 
-invalid_account_output=$(printf '2\n2026\n4\n' | "$program")
+invalid_account_output=$(printf '2\n2026\n2026/0\nbad\n\n4\n' | "$program")
 printf '%s\n' "$invalid_account_output" | grep -q "Invalid account number. Expected format YYYY/N."
 
-invalid_sequence_output=$(printf '2\n2026/0\n4\n' | "$program")
+invalid_sequence_output=$(printf '2\n2026/0\n2026\nbad\n\n4\n' | "$program")
 printf '%s\n' "$invalid_sequence_output" | grep -q "Invalid account number. Expected format YYYY/N."
 
 
