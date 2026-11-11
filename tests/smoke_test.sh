@@ -49,7 +49,7 @@ printf '%s\n' "$invalid_sequence_output" | grep -q "Invalid account number. Expe
 printf '%s\n' "Smoke and regression tests passed."
 
 # Verify PIN changes are persisted and the new PIN can authenticate.
-pin_change_output=$(printf '2\\n2026/1\\n1234\\n8\\n1234\\n5678\\n5678\\n\\n9\\n4\\n' | "$program")
-printf '%s\\n' "$pin_change_output" | grep -q "Your PIN has been changed successfully"
-new_pin_login_output=$(printf '2\\n2026/1\\n5678\\n9\\n4\\n' | "$program")
-printf '%s\\n' "$new_pin_login_output" | grep -q "Welcome, CI Test User!"
+pin_change_output=$(printf '2\n2026/1\n1234\n8\n1234\n5678\n5678\n\n9\n4\n' | "$program")
+printf '%s\n' "$pin_change_output" | grep -q "Your PIN has been changed successfully"
+new_pin_login_output=$(printf '2\n2026/1\n5678\n9\n4\n' | "$program")
+printf '%s\n' "$new_pin_login_output" | grep -q "Welcome, CI Test User!"
