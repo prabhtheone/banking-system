@@ -201,6 +201,7 @@ Core responsibilities are kept in `banking_system.c`, while the `tests/` directo
 ├── tests/
 │   └── smoke_test.sh
 ├── banking_system.c
+├── ui.h
 ├── Makefile
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -219,7 +220,8 @@ The current implementation intentionally keeps the design simple. In particular:
 
 - PINs are stored as plaintext in the local binary account file.
 - Account and transaction files are not encrypted at rest.
-- There is no login lockout or rate limiting.
+- The three-attempt login limit applies only to one login session; it is not persistent rate limiting or a production-grade lockout.
+- PINs remain stored in plaintext in the local binary account file.
 - The demo account directory displays account data and should not be treated as a real bank interface.
 - File operations are designed for a simple local application, not concurrent users.
 - There is no real bank/payment integration.
