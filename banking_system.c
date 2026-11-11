@@ -339,7 +339,7 @@ void createAccount(void) {
         printf("Warning: account created, but transaction history could not be saved.\n");
     }
 
-    printf("\nAccount created successfully!\n");
+    uiPrintSuccess("Account created successfully!");
     printf("Your account number is: %s\n", acc.accountNumber);
     printf("Please save this number; you'll need it to log in.\n");
     pauseScreen();
@@ -394,7 +394,9 @@ void depositMoney(Account *acc) {
                         acc->balance, "Cash deposit")) {
         printf("Warning: deposit completed, but transaction history could not be saved.\n");
     }
-    printf("Deposit successful. New balance: %.2f\n", acc->balance);
+    char successMessage[80];
+    snprintf(successMessage, sizeof(successMessage), "Deposit successful. New balance: %.2f", acc->balance);
+    uiPrintSuccess(successMessage);
 }
 
 // Removes money from an account after checking the balance.
@@ -419,7 +421,9 @@ void withdrawMoney(Account *acc) {
                         acc->balance, "Cash withdrawal")) {
         printf("Warning: withdrawal completed, but transaction history could not be saved.\n");
     }
-    printf("Withdrawal successful. New balance: %.2f\n", acc->balance);
+    char successMessage[80];
+    snprintf(successMessage, sizeof(successMessage), "Withdrawal successful. New balance: %.2f", acc->balance);
+    uiPrintSuccess(successMessage);
 }
 
 // Displays the current account information without modifying it.
@@ -491,7 +495,9 @@ void transferMoney(Account *sender) {
                         receiver.balance, desc)) {
         printf("Warning: transfer completed, but recipient history could not be saved.\n");
     }
-    printf("Transfer successful. New balance: %.2f\n", sender->balance);
+    char successMessage[80];
+    snprintf(successMessage, sizeof(successMessage), "Transfer successful. New balance: %.2f", sender->balance);
+    uiPrintSuccess(successMessage);
 }
 
 // Reads transaction records and displays only this account's transactions.
@@ -590,6 +596,7 @@ void deleteAccount(Account *acc) {
     }
 
     printf("Account %s has been deleted.\n", acc->accountNumber);
+    uiPrintSuccess("Account deletion completed.");
 }
 
 
