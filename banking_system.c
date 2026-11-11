@@ -33,6 +33,7 @@
 #include <string.h>
 // time.h: used to create transaction date/time stamps.
 #include <time.h>
+#include "ui.h"
 
 // File where Account structures are permanently stored.
 #define ACCOUNTS_FILE "accounts.dat"
@@ -591,6 +592,84 @@ void deleteAccount(Account *acc) {
     printf("Account %s has been deleted.\n", acc->accountNumber);
 }
 
+
+/* Change the PIN after verifying the current PIN and confirming the new one. */
+void changePin(Account *acc) {
+    char currentPin[PIN_BUF_LEN], newPin[PIN_BUF_LEN], confirmPin[PIN_BUF_LEN];
+    printf("\nEnter current PIN: ");
+    readLine(currentPin, sizeof(currentPin));
+    if (strcmp(currentPin, acc->pin) != 0) {
+        uiPrintError("Current PIN is incorrect.");
+        return;
+    }
+    printf("Enter new 4-digit PIN: ");
+    readLine(newPin, sizeof(newPin));
+    if (!isValidPin(newPin)) {
+        uiPrintError("PIN must contain exactly four digits.");
+        return;
+    }
+    printf("Confirm new PIN: ");
+    readLine(confirmPin, sizeof(confirmPin));
+    if (strcmp(newPin, confirmPin) != 0) {
+        uiPrintError("PIN confirmation does not match.");
+        return;
+    }
+    if (strcmp(newPin, acc->pin) == 0) {
+        uiPrintError("Choose a PIN different from your current PIN.");
+        return;
+    }
+    char previousPin[sizeof(acc->pin)];
+    strncpy(previousPin, acc->pin, sizeof(previousPin) - 1);
+    previousPin[sizeof(previousPin) - 1] = '\0';
+    strncpy(acc->pin, newPin, sizeof(acc->pin) - 1);
+    acc->pin[sizeof(acc->pin) - 1] = '\0';
+    if (!updateAccount(*acc)) {
+        strncpy(acc->pin, previousPin, sizeof(acc->pin) - 1);
+        acc->pin[sizeof(acc->pin) - 1] = '\0';
+        uiPrintError("PIN could not be updated. No changes were saved.");
+        return;
+    }
+    uiPrintSuccess("Your PIN has been changed successfully.");
+}
+
+/* Show account details and the five most recent transactions. */
+void showDashboard(const Account *acc) {
+    Transaction recent[5];
+    int count = 0, next = 0;
+    FILE *fp = fopen(TRANSACTIONS_FILE, "rb");
+
+    uiPrintHeader("CUSTOMER DASHBOARD");
+    printf("%-20s %s\n", "Customer", acc->name);
+    printf("%-20s %s\n", "Account number", acc->accountNumber);
+    printf("%-20s %.2f\n", "Available balance", acc->balance);
+    uiPrintDivider();
+    printf("%sRecent activity%s\n", uiColor(UI_BOLD), uiColor(UI_RESET));
+
+    if (fp != NULL) {
+        Transaction txn;
+        while (fread(&txn, sizeof(txn), 1, fp) == 1) {
+            if (strcmp(txn.accountNumber, acc->accountNumber) == 0) {
+                recent[next] = txn;
+                next = (next + 1) % 5;
+                if (count < 5) count++;
+            }
+        }
+        if (ferror(fp)) uiPrintError("Some transaction records could not be read.");
+        fclose(fp);
+    }
+    if (count == 0) {
+        printf("No transactions recorded yet.\n");
+        return;
+    }
+    printf("%-20s %-15s %-12s %s\n", "Date", "Type", "Amount", "Balance");
+    int oldest = count == 5 ? next : 0;
+    for (int i = 0; i < count; i++) {
+        int index = (oldest + i) % 5;
+        printf("%-20s %-15s %-12.2f %.2f\n", recent[index].timestamp,
+               recent[index].type, recent[index].amount, recent[index].balanceAfter);
+    }
+}
+
 // Controls all actions available after a successful login.
 void accountMenu(Account acc) {
     int choice;
@@ -602,14 +681,19 @@ void accountMenu(Account acc) {
             return;
         }
 
-        printf("\n========== Account Menu (Acc #%s) ==========\n", acc.accountNumber);
-        printf("1. Check Balance\n");
-        printf("2. Deposit\n");
-        printf("3. Withdraw\n");
-        printf("4. Transfer Money\n");
-        printf("5. Transaction History\n");
-        printf("6. Delete Account\n");
-        printf("7. Logout\n");
+        uiPrintHeader("ACCOUNT MENU");
+        printf("Logged in as %s | Account %s\n", acc.name, acc.accountNumber);
+        printf("Current balance: %.2f\n", acc.balance);
+        uiPrintDivider();
+        printf("1. Customer Dashboard\n");
+        printf("2. Check Balance\n");
+        printf("3. Deposit\n");
+        printf("4. Withdraw\n");
+        printf("5. Transfer Money\n");
+        printf("6. Transaction History\n");
+        printf("7. Delete Account\n");
+        printf("8. Change PIN\n");
+        printf("9. Logout\n");
 
         if (!readInt("Choose an option: ", &choice)) {
             printf("Invalid input.\n");
@@ -618,16 +702,18 @@ void accountMenu(Account acc) {
 
         // switch chooses the action matching the menu number.
 switch (choice) {
-            case 1: checkBalance(&acc); break;
-            case 2: depositMoney(&acc); break;
-            case 3: withdrawMoney(&acc); break;
-            case 4: transferMoney(&acc); break;
-            case 5: viewTransactionHistory(acc.accountNumber); break;
-            case 6:
+            case 1: showDashboard(&acc); break;
+            case 2: checkBalance(&acc); break;
+            case 3: depositMoney(&acc); break;
+            case 4: withdrawMoney(&acc); break;
+            case 5: transferMoney(&acc); break;
+            case 6: viewTransactionHistory(acc.accountNumber); break;
+            case 7:
                 deleteAccount(&acc);
                 if (!acc.active) loggedIn = 0;
                 break;
-            case 7:
+            case 8: changePin(&acc); break;
+            case 9:
                 printf("Logging out...\n");
                 loggedIn = 0;
                 break;
@@ -645,12 +731,14 @@ void mainMenu(void) {
     int running = 1;
 
     while (running) {
-        printf("\n================ BANKING SYSTEM ================\n");
+        uiPrintHeader("C BANKING SYSTEM");
+        printf("Welcome! Manage your demo account with a simple terminal interface.\n");
+        uiPrintDivider();
         printf("1. Create Account\n");
         printf("2. Login\n");
         printf("3. List All Accounts (demo)\n");
         printf("4. Exit\n");
-        printf("==================================================\n");
+        uiPrintDivider();
 
         if (!readInt("Choose an option: ", &choice)) {
             printf("Invalid input.\n");
@@ -661,14 +749,25 @@ void mainMenu(void) {
         // switch chooses the action matching the menu number.
 switch (choice) {
             case 1: createAccount(); break;
-            case 2:
-                if (authenticate(&acc)) {
+            case 2: {
+                int authenticated = 0;
+                for (int attempt = 1; attempt <= 3; attempt++) {
+                    if (authenticate(&acc)) {
+                        authenticated = 1;
+                        break;
+                    }
+                    if (attempt < 3) printf("Login attempts remaining: %d\n", 3 - attempt);
+                }
+                if (authenticated) {
                     printf("\nWelcome, %s!\n", acc.name);
+                    showDashboard(&acc);
                     accountMenu(acc);
                 } else {
+                    uiPrintError("Maximum login attempts reached. Returning to the main menu.");
                     pauseScreen();
                 }
                 break;
+            }
             case 3:
                 listAllAccounts();
                 pauseScreen();
