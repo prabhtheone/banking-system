@@ -88,18 +88,20 @@ void clearInputBuffer(void) {
 }
 
 // Safely reads text from the user and removes the final newline.
-void readLine(char *buf, size_t bufSize) {
-    if (buf == NULL || bufSize == 0) return;
+int readLine(char *buf, size_t bufSize) {
+    if (buf == NULL || bufSize == 0) return 0;
     if (fgets(buf, (int)bufSize, stdin) == NULL) {
         buf[0] = '\0';
-        return;
+        return 0;
     }
+
     size_t len = strlen(buf);
     if (len > 0 && buf[len - 1] == '\n') {
         buf[len - 1] = '\0';
     } else {
         clearInputBuffer();
     }
+    return 1;
 }
 
 // Returns 1 when text is empty/only whitespace; otherwise returns 0.
@@ -128,11 +130,12 @@ int readInt(const char *prompt, int *value) {
     long parsed;
 
     printf("%s", prompt);
-    readLine(input, sizeof(input));
+    if (!readLine(input, sizeof(input))) return -1;
     if (input[0] == '\0') return 0;
 
     errno = 0;
     parsed = strtol(input, &end, 10);
+    if (end == input) return 0;
     while (isspace((unsigned char)*end)) end++;
     if (errno != 0 || *end != '\0' || parsed < INT_MIN || parsed > INT_MAX) return 0;
 
@@ -147,11 +150,12 @@ int readAmount(const char *prompt, double *amount) {
     double parsed;
 
     printf("%s", prompt);
-    readLine(input, sizeof(input));
+    if (!readLine(input, sizeof(input))) return 0;
     if (input[0] == '\0') return 0;
 
     errno = 0;
     parsed = strtod(input, &end);
+    if (end == input) return 0;
     while (isspace((unsigned char)*end)) end++;
     if (errno != 0 || *end != '\0' || !isfinite(parsed) ||
         parsed < MIN_TRANSACTION_AMOUNT || parsed > MAX_TRANSACTION_AMOUNT) return 0;
@@ -702,7 +706,12 @@ void accountMenu(Account acc) {
         printf("8. Change PIN\n");
         printf("9. Logout\n");
 
-        if (!readInt("Choose an option: ", &choice)) {
+        int inputStatus = readInt("Choose an option: ", &choice);
+        if (inputStatus < 0) {
+            printf("\nInput closed. Logging out.\n");
+            return;
+        }
+        if (inputStatus == 0) {
             printf("Invalid input.\n");
             continue;
         }
@@ -747,7 +756,13 @@ void mainMenu(void) {
         printf("4. Exit\n");
         uiPrintDivider();
 
-        if (!readInt("Choose an option: ", &choice)) {
+        int inputStatus = readInt("Choose an option: ", &choice);
+        if (inputStatus < 0) {
+            printf("\nInput closed. Exiting.\n");
+            running = 0;
+            break;
+        }
+        if (inputStatus == 0) {
             printf("Invalid input.\n");
             continue;
         }

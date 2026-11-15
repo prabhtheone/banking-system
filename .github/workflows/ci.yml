@@ -17,8 +17,8 @@ jobs:
       - name: Build
         run: make
 
-      - name: Run smoke test
-        run: make test
+      - name: Run regression tests and sanitizers
+        run: make verify
 
       - name: Strict compile check
         run: gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o /tmp/banking_system banking_system.c
