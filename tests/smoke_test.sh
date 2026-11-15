@@ -53,4 +53,43 @@ printf '%s\n' "$pin_change_output" | grep -q "Your PIN has been changed successf
 new_pin_login_output=$(printf '2\n2026/1\n5678\n9\n4\n' | "$program")
 printf '%s\n' "$new_pin_login_output" | grep -q "Welcome, CI Test User!"
 
+
+# Blank input is not a valid menu choice, and end-of-input must exit cleanly.
+blank_menu_output=$(printf '   \n4\n' | "$program")
+printf '%s\n' "$blank_menu_output" | grep -q "Invalid input."
+printf '%s\n' "$blank_menu_output" | grep -q "Goodbye!"
+
+eof_output=$("$program" </dev/null)
+printf '%s\n' "$eof_output" | grep -q "Input closed. Exiting."
+
+# EOF at the account menu must also return to the main menu and then exit.
+account_eof_output=$(printf '2\n2026/1\n5678\n' | "$program")
+printf '%s\n' "$account_eof_output" | grep -q "Input closed. Exiting."
+
+# Exercise a transfer between two accounts and verify both persisted balances
+# and the recipient's transaction history.
+transfer_dir="$test_dir/transfers"
+mkdir "$transfer_dir"
+(
+    cd "$transfer_dir"
+    printf '1\nSender User\n1111\n100\n\n1\nReceiver User\n2222\n50\n\n4\n' |
+        NO_COLOR=1 "$program" >/dev/null
+
+    transfer_output=$(printf '2\n2026/1\n1111\n5\n2026/2\n25\n\n9\n4\n' |
+        NO_COLOR=1 "$program")
+    printf '%s\n' "$transfer_output" | grep -q "Transfer successful. New balance: 75.00"
+
+    sender_output=$(printf '2\n2026/1\n1111\n2\n\n9\n4\n' |
+        NO_COLOR=1 "$program")
+    printf '%s\n' "$sender_output" | grep -q "Balance        : 75.00"
+
+    receiver_output=$(printf '2\n2026/2\n2222\n2\n\n9\n4\n' |
+        NO_COLOR=1 "$program")
+    printf '%s\n' "$receiver_output" | grep -q "Balance        : 75.00"
+
+    history_output=$(printf '2\n2026/2\n2222\n6\n\n9\n4\n' |
+        NO_COLOR=1 "$program")
+    printf '%s\n' "$history_output" | grep -q "TRANSFER_IN"
+)
+
 printf '%s\n' "Smoke and regression tests passed."
