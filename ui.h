@@ -10,7 +10,6 @@
 #define UI_CYAN "\033[36m"
 #define UI_GREEN "\033[32m"
 #define UI_RED "\033[31m"
-#define UI_YELLOW "\033[33m"
 #define UI_BLUE "\033[34m"
 
 static inline const char *uiColor(const char *color) {

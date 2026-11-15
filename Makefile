@@ -15,7 +15,7 @@ test: $(TARGET)
 
 sanitize:
 	$(CC) $(CFLAGS) -g -fsanitize=address,undefined -fno-omit-frame-pointer -o $(TARGET)-sanitized $(SRC)
-	ASAN_OPTIONS=detect_leaks=1 ./$(TARGET)-sanitized </dev/null || true
+	ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 BANKING_SYSTEM_BIN="$(CURDIR)/$(TARGET)-sanitized" sh tests/smoke_test.sh
 	rm -f $(TARGET)-sanitized
 
 verify: $(TARGET)
@@ -23,4 +23,4 @@ verify: $(TARGET)
 	$(MAKE) sanitize
 
 clean:
-	rm -f $(TARGET) *.o accounts.dat transactions.dat
+	rm -f $(TARGET) $(TARGET)-sanitized *.o accounts.dat transactions.dat
