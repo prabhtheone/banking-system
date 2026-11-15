@@ -1,61 +1,42 @@
 # Contributing
 
-Thanks for helping improve **Banking System (C)**!
+Thanks for taking the time to improve this C project.
 
-## Development setup
+## Set up
 
-1. Install GCC and Make.
-2. Clone the repository.
-3. Build with `make`.
-4. Run `./banking_system`.
+1. Fork and clone the repository.
+2. Make sure a C11 compiler and Make are installed.
+3. Build and run the program:
+
+   ```sh
+   make
+   ./banking_system
+   ```
 
 ## Before opening a pull request
 
-- Keep changes focused and easy to review.
-- Compile with `make` and check for warnings.
-- Run `make verify` before submitting changes.
-- Do not commit `accounts.dat` or `transactions.dat`.
-- Explain what changed and why in the pull request description.
-- Include or update regression tests when behavior changes.
-- Confirm that account IDs still follow the `YYYY/N` format when account-related behavior changes.
-- Check that failed validation does not leave unexpected runtime files or partial account updates.
+Run the verification target:
 
-## Testing checklist
-
-For changes affecting account creation, authentication, transfers, or persistence:
-
-```bash
+```sh
 make verify
 ```
 
-The verification workflow builds the project, runs the smoke/regression suite, and performs the sanitizer build.
+It builds the program, runs the regression tests, and runs the sanitizer build. Sanitizer support depends on the compiler and runtime available on your system.
 
-The smoke/regression suite runs the program from a temporary working directory and removes that directory when it finishes. This keeps test-generated `accounts.dat` and `transactions.dat` files separate from any runtime data you may already have in the repository folder.
+Keep each change focused. Add or update a regression test when changing behaviour, and describe what changed and which commands you ran.
 
-The suite checks account creation and validation, a successful deposit followed by a withdrawal (including the resulting balance), self-transfer rejection, malformed account IDs, and incomplete transaction-history records. Use fictional names, PINs, and balances only.
+Do not commit generated files such as `banking_system`, `accounts.dat`, or `transactions.dat`. Use fictional test data only.
 
-For account-ID changes, also verify examples such as `2026/1`, `2026/2`, and malformed values are handled consistently.
+## Commits
 
-## Commit guidelines
+Use short messages that describe the change. Keep unrelated changes in separate commits so they can be reviewed or reverted independently.
 
-Use a short, descriptive commit message that explains the purpose of the change. Prefer the repository's existing conventional format, such as:
+Examples:
 
 ```text
-docs: improve contributor guidance
-fix: validate transfer input
-test: add account ID regression coverage
+fix: reject blank menu input
+test: cover transfer history
+docs: clarify local data files
 ```
 
-Keep unrelated changes in separate commits so each change is easy to review or revert.
-
-## Ideas for contributions
-
-- Stronger input validation
-- Secure PIN hashing
-- Better transaction validation
-- Automated tests
-- Cross-platform improvements
-- Improved terminal UI
-- Documentation and examples
-
-Please do not use real financial or personal information when testing this learning project.
+For security limitations and safe testing, read [SECURITY.md](SECURITY.md).

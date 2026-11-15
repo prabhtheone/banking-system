@@ -1,283 +1,75 @@
-# 🏦 Banking System in C
+# Banking System in C
 
 [![C CI](https://github.com/prabhtheone/banking-system/actions/workflows/ci.yml/badge.svg)](https://github.com/prabhtheone/banking-system/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Language: C](https://img.shields.io/badge/Language-C-A8B9CC.svg?logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
 
-A **console-based banking system written in C** that demonstrates account management, authentication, file-based persistence, transfers, and transaction history — without an external database.
+A terminal-based banking simulation written in C. It is a small project for practising structs, input validation, file I/O, and breaking a program into functions.
 
-> 🎓 **Learning project:** built to practice C programming, structs, file I/O, functions, input validation, error handling, and basic application architecture.
+> **Educational use only.** This program stores PINs in plaintext and saves data in local binary files. Do not use real credentials, personal financial information, or real money.
 
-> ⚠️ **Important:** this is an educational simulation, not production banking software. Do not use real credentials, personal financial data, or real money.
+## Features
 
-## ✨ Features
+- Create accounts with sequential IDs such as `2026/1` and `2026/2`.
+- Log in with an account number and four-digit PIN.
+- Check balances, deposit, withdraw, and transfer between accounts.
+- View transaction history and a dashboard with recent activity.
+- Change a PIN and close an account once its balance is zero.
+- Save account and transaction records locally between runs.
+- Use a small ANSI terminal interface; set `NO_COLOR=1` to disable colour.
 
-- 👤 Create bank accounts with year-based IDs (`2026/1`, `2026/2`, `2026/3`, ...)
-- 🖥️ Styled terminal interface with reusable ANSI color helpers and `NO_COLOR` support
-- 📊 Customer dashboard with account summary and the five most recent transactions
-- 🔑 Change PIN from the authenticated account menu
-- 🚦 Limit each login session to three authentication attempts
-- 🔐 PIN-protected login with 4-digit validation
-- 💰 Deposit and withdraw money
-- 🔄 Transfer money between accounts
-- 📊 Check account balance
-- 🧾 View timestamped transaction history
-- 📋 List active demo accounts
-- 🗑️ Delete accounts only after the balance reaches zero
-- 💾 Persistent storage using binary files
-- 🛡️ Defensive input validation and file-write checks
-- 🧰 Simple `Makefile` build and test workflow
-- 🤖 GitHub Actions CI for automated build and smoke testing
-- 🖥️ Runs on Linux, macOS, and Windows with a compatible C11 toolchain
+## Build and run
 
-## 🚀 Quick Start
+Requirements: a C11 compiler (GCC or Clang) and Make.
 
-### Requirements
-
-- GCC or another C11-compatible compiler
-- Make (recommended)
-
-### Build
-
-```bash
+```sh
 make
-```
-
-Or compile directly:
-
-```bash
-gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o banking_system banking_system.c
-```
-
-### Run
-
-Linux/macOS/WSL:
-
-```bash
 ./banking_system
 ```
 
-Windows (MinGW):
+You can also compile without Make:
 
-```bash
-banking_system.exe
+```sh
+gcc -Wall -Wextra -Wpedantic -std=c11 -O2 -o banking_system banking_system.c
 ```
 
-## 🔧 Development Workflow
+## Tests
 
-Use the following commands during development:
-
-```bash
-make          # build the application
-make test     # run the smoke/regression tests
-make sanitize # build with sanitizers
-make verify   # run the complete local verification workflow
+```sh
+make test     # build and run the regression tests
+make verify   # run tests and AddressSanitizer/UndefinedBehaviorSanitizer
+make clean    # remove the executable and local test data
 ```
 
-The repository also runs automated checks through GitHub Actions on pushes and pull requests.
+The test script runs the program in a temporary directory. It covers account creation, input validation, deposits, withdrawals, PIN changes, menu end-of-input, transfers, and transaction history. The sanitizer target requires compiler and runtime support for AddressSanitizer and UndefinedBehaviorSanitizer.
 
-## 🧪 Test
+## Files
 
-The project uses a small regression/smoke suite to catch common failures in account creation, startup, invalid input, and transfer behavior.
+- `banking_system.c` — menus, validation, account actions, and file operations.
+- `ui.h` — small terminal formatting helpers.
+- `tests/smoke_test.sh` — automated command-line regression tests.
+- `Makefile` — build, test, sanitizer, and cleanup targets.
+- `.github/workflows/ci.yml` — runs the verification commands on pushes and pull requests.
 
-### What is checked
+The application creates `accounts.dat` and `transactions.dat` in its current working directory. These files contain local demo data and are ignored by Git. Do not commit them.
 
-- Successful compilation with the configured C11 flags
-- Account creation and persisted runtime data
-- Clean program startup and exit
-- Invalid input handling
-- Self-transfer rejection
-- Temporary test-data cleanup
+## Account IDs
 
-## 🛠️ Troubleshooting
+New IDs use the configured year and the next sequence number. Deleted records remain in the account file, so their sequence numbers are not reused. The year is currently set by `ACCOUNT_YEAR` in the source code.
 
-### `make` is not recognized
+## Limitations
 
-Install a C toolchain and Make. On Windows, MinGW/MSYS2 or another GCC-compatible environment can provide both.
+This is not a secure or production banking application:
 
-### Compiler not found
+- PINs are stored as plaintext.
+- Account and transaction files are not encrypted.
+- Balances use `double`, which is not suitable for precise financial calculations.
+- Binary records depend on the compiler's structure layout.
+- Transfers use ordinary file writes and best-effort rollback; they are not atomic.
+- The program has no database, concurrent-access protection, or external banking integration.
+- The account directory displays names and balances.
 
-Check that GCC is available in your terminal:
+See [SECURITY.md](SECURITY.md) before testing or contributing. Use fictional names, PINs, and balances only.
 
-```bash
-gcc --version
-```
+## Learning notes
 
-If the command is unavailable, install GCC and add it to your system PATH.
-
-### Tests leave runtime files behind
-
-The application normally creates `accounts.dat` and `transactions.dat` in the working directory. The automated smoke test uses temporary test data and cleans it up when it finishes.
-
-If you want to reset a local demo manually, first make sure the program is not running, then remove the generated runtime files:
-
-Linux/macOS/WSL:
-
-```bash
-rm -f accounts.dat transactions.dat
-```
-
-Windows PowerShell:
-
-```powershell
-Remove-Item accounts.dat, transactions.dat -ErrorAction SilentlyContinue
-```
-
-These files contain local demo data and should remain untracked; do not commit them to the repository.
-
-### Sanitizer build is unavailable
-
-`make sanitize` depends on compiler sanitizer support. If your toolchain does not provide AddressSanitizer, use `make test` and the normal `make` build, then report the toolchain details when opening an issue.
-
-## 🖥️ Example
-
-```text
-================ BANKING SYSTEM ================
-1. Create Account
-2. Login
-3. List All Accounts (demo)
-4. Exit
-==================================================
-Choose an option: 1
-
-=== Create New Account ===
-Enter full name: Alex Kumar
-Set a 4-digit PIN: 1234
-Enter initial deposit amount: 5000
-
-Account created successfully!
-Your account number is: 2026/1
-```
-
-Account IDs use a readable `YYYY/N` format. New accounts in the current configured account year start at `2026/1` and continue sequentially (`2026/2`, `2026/3`, ...). The sequence is persisted with the account data, so deleted accounts do not cause an existing ID to be reused. For example, if `2026/1` and `2026/2` already exist and `2026/1` is deleted, the next new account remains `2026/3`, not `2026/1`. After login, users can check their balance, deposit, withdraw, transfer funds, review transactions, or delete an account after its balance reaches zero.
-
-## 🧭 Typical Usage Flow
-
-1. Create an account and note the generated `YYYY/N` account number.
-2. Log in with the account number and 4-digit PIN.
-3. Use deposits, withdrawals, transfers, and transaction history from the account menu.
-4. Keep the account balance at zero before deleting the account.
-
-This flow is intended for local learning and testing; runtime data stays in the ignored `accounts.dat` and `transactions.dat` files.
-
-## 🧠 What This Project Demonstrates
-
-This project is useful for students learning C because it combines several concepts in one application:
-
-- `struct`-based data modeling
-- Functions and modular program flow
-- Binary file read/write operations
-- Account lookup and record updates
-- Year-based sequential account ID generation (`YYYY/N`)
-- Transaction logging
-- Basic authentication
-- Robust line-based input parsing
-- Persistent local application state
-- Make-based compilation and testing
-- Continuous integration with GitHub Actions
-
-## 🧩 Architecture Overview
-
-The application follows a simple file-backed design:
-
-```text
-User Input → Menu/Validation → Account Operations → File Storage
-                              ↓
-                       Transaction Logging
-```
-
-Core responsibilities are kept in `banking_system.c`, while the `tests/` directory contains regression checks and `.github/workflows/` runs the automated CI workflow.
-
-## 📁 Project Structure
-
-```text
-.
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   └── feature_request.md
-│   └── workflows/
-│       └── ci.yml
-├── tests/
-│   └── smoke_test.sh
-├── banking_system.c
-├── ui.h
-├── Makefile
-├── LICENSE
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── README.md
-└── .gitignore
-```
-
-`accounts.dat` and `transactions.dat` are generated locally at runtime and are intentionally excluded from Git.
-
-## ⚠️ Security & Limitations
-
-This is an **educational project, not production banking software**.
-
-The current implementation intentionally keeps the design simple. In particular:
-
-- PINs are stored as plaintext in the local binary account file.
-- Account and transaction files are not encrypted at rest.
-- The three-attempt login limit applies only to one login session; it is not persistent rate limiting or a production-grade lockout.
-- PINs remain stored in plaintext in the local binary account file.
-- The demo account directory displays account data and should not be treated as a real bank interface.
-- File operations are designed for a simple local application, not concurrent users.
-- There is no real bank/payment integration.
-
-See [SECURITY.md](SECURITY.md) for the project's security notes and responsible-reporting guidance.
-
-## 🗺️ Roadmap
-
-Potential next improvements:
-
-- [ ] Hash PINs with a vetted password-hashing library
-- [ ] Replace floating-point money with integer cents
-- [ ] Add comprehensive automated unit/integration tests
-- [ ] Make transfers fully atomic with stronger storage guarantees
-- [ ] Add account statements/export
-- [x] Add a styled terminal UI and customer dashboard
-- [x] Add customer PIN change and a three-attempt login limit
-- [ ] Add account statements/export
-- [ ] Add transaction filtering by date and type
-- [ ] Add login retry limits and lockout
-- [ ] Improve cross-platform tooling
-- [ ] Make the account year configurable instead of compile-time configured
-- [ ] Add a database-backed version for comparison
-
-## 🤝 Contributing
-
-Contributions are welcome — especially improvements that make the project safer, easier to understand, or more useful for C learners.
-
-### Before opening a pull request
-
-1. Build the project with `make`.
-2. Run `make test` to execute the regression checks.
-3. Run `make verify` when changing core behavior.
-4. Keep generated runtime files such as `accounts.dat` and `transactions.dat` out of commits.
-5. Explain the behavior change and testing performed in the pull request description.
-
-See **[CONTRIBUTING.md](CONTRIBUTING.md)** for development guidelines. Bug reports and feature ideas can also use the repository's issue templates.
-
-## ⭐ Support the Project
-
-If this project helped you learn C, file handling, or application design, consider **starring the repository**. A genuine star helps other learners discover the project.
-
-Issues, pull requests, documentation improvements, and constructive feedback are also welcome.
-
-## 📄 License
-
-Released under the **MIT License**. See [LICENSE](LICENSE) for details.
-
-## 👨‍💻 Author
-
-**Prabhjot Singh Gill**
-
-GitHub: [@prabhtheone](https://github.com/prabhtheone)
-
----
-
-### Keywords
-
-`c` `c-programming` `c11` `banking-system` `banking` `finance` `console-application` `file-handling` `file-io` `binary-files` `authentication` `transaction-history` `makefile` `github-actions` `smoke-test` `beginner-project` `student-project` `learning-c` `systems-programming`
+[CODE_EXPLAINED.md](CODE_EXPLAINED.md) gives a short walkthrough of the data structures, input handling, persistence, and main banking operations. See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
