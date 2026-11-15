@@ -253,7 +253,7 @@ void createAccount(void) {
         printf("Invalid PIN. PIN must contain exactly 4 digits.\n");
         return;
     }
-    strncpy(acc.pin, pinInput, sizeof(acc.pin) - 1);
+    memcpy(acc.pin, pinInput, sizeof(acc.pin));
 
     if (!readAmount("Enter initial deposit amount: ", &initialDeposit)) {
         printf("Invalid amount. Account creation cancelled.\n");
@@ -528,13 +528,10 @@ void changePin(Account *acc) {
         return;
     }
     char previousPin[sizeof(acc->pin)];
-    strncpy(previousPin, acc->pin, sizeof(previousPin) - 1);
-    previousPin[sizeof(previousPin) - 1] = '\0';
-    strncpy(acc->pin, newPin, sizeof(acc->pin) - 1);
-    acc->pin[sizeof(acc->pin) - 1] = '\0';
+    memcpy(previousPin, acc->pin, sizeof(previousPin));
+    memcpy(acc->pin, newPin, sizeof(acc->pin));
     if (!updateAccount(*acc)) {
-        strncpy(acc->pin, previousPin, sizeof(acc->pin) - 1);
-        acc->pin[sizeof(acc->pin) - 1] = '\0';
+        memcpy(acc->pin, previousPin, sizeof(acc->pin));
         uiPrintError("PIN could not be updated. No changes were saved.");
         return;
     }
