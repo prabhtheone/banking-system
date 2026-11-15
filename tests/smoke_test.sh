@@ -8,7 +8,11 @@ trap 'rm -rf "$test_dir"' EXIT HUP INT TERM
 # Run from a temporary directory so tests never overwrite the user's local
 # accounts.dat or transactions.dat files in the repository.
 cd "$test_dir"
-program="$project_dir/banking_system"
+if [ -n "${BANKING_SYSTEM_BIN:-}" ]; then
+    program=$BANKING_SYSTEM_BIN
+else
+    program="$project_dir/banking_system"
+fi
 
 output=$(printf '1\nCI Test User\n1234\n100\n\n4\n' | "$program")
 
