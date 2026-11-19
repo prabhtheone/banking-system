@@ -68,7 +68,7 @@ This is not a secure or production banking application:
 - The program has no database, concurrent-access protection, or external banking integration.
 - The account directory displays names and balances.
 
-See [SECURITY.md](SECURITY.md) before testing or contributing. Use fictional names, PINs, and balances only.
+See [SECURITY.md](SECURITY.md) before testing or contributing. Use fictional names, PINs, and balances only. For transparency about development assistance, see [AI_DISCLOSURE.md](AI_DISCLOSURE.md).
 
 ## Learning notes
 
